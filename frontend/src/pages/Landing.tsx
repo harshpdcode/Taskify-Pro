@@ -6,9 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 import MultiverseStationArtifact from '../components/MultiverseStationArtifact';
 import AsciiGlitchText from '../components/AsciiGlitchText';
 import { 
-  Kanban, 
   Sparkles, 
-  ArrowRight,
   X,
   Zap,
   Flame,
@@ -38,29 +36,61 @@ export default function Landing() {
     document.title = "Taskify Pro — Effortless planning. Limitless focus.";
   }, []);
 
-  // Track mouse coordinates for interactive multiverse dimensional pulling
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+  // Universal coordinate tracker for both Mouse (Desktop) and Finger Drag (Mobile Phone)
+  const updateInteractiveOffset = (clientX: number, clientY: number) => {
     if (!stationRef.current) return;
     const rect = stationRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    const distX = e.clientX - centerX;
-    const distY = e.clientY - centerY;
+    const distX = clientX - centerX;
+    const distY = clientY - centerY;
     const distance = Math.sqrt(distX * distX + distY * distY);
 
     // Calculate proximity intensity
-    const maxDist = 420;
-    const intensity = Math.max(0, 1 - distance / maxDist);
+    const maxDist = Math.max(380, typeof window !== 'undefined' ? window.innerWidth * 0.7 : 400);
+    const intensity = Math.max(0.25, Math.min(1.25, 1.25 - distance / maxDist));
 
     setMouseOffset({
-      x: (distX / (rect.width / 2)) * 25,
-      y: (distY / (rect.height / 2)) * 20,
+      x: (distX / (rect.width / 2)) * 28,
+      y: (distY / (rect.height / 2)) * 24,
       intensity,
     });
+    setIsHoveringArtwork(true);
+  };
+
+  // Mouse event handlers (PC / Laptop View)
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    updateInteractiveOffset(e.clientX, e.clientY);
   };
 
   const handleMouseEnter = () => setIsHoveringArtwork(true);
   const handleMouseLeave = () => {
+    setIsHoveringArtwork(false);
+    setMouseOffset({ x: 0, y: 0, intensity: 0 });
+  };
+
+  // Touch event handlers (Mobile Phone View — Follows finger and persists until clicking outside)
+  const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    const touch = e.touches[0];
+    if (touch) {
+      updateInteractiveOffset(touch.clientX, touch.clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLElement>) => {
+    const touch = e.touches[0];
+    if (touch) {
+      updateInteractiveOffset(touch.clientX, touch.clientY);
+    }
+  };
+
+  // On mobile touch end, keep the animation and tilt angle active!
+  const handleTouchEnd = () => {
+    setIsHoveringArtwork(true);
+  };
+
+  // Reset animation only when user clicks/taps outside the interactive stage
+  const handleResetStage = () => {
     setIsHoveringArtwork(false);
     setMouseOffset({ x: 0, y: 0, intensity: 0 });
   };
@@ -90,7 +120,7 @@ export default function Landing() {
           padding: 0 max(12px, 3vw);
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justifyContent: space-between;
           background: var(--bg-sidebar);
           border-bottom: 3px solid #000000;
           box-shadow: 0 3px 0px #000000;
@@ -121,7 +151,7 @@ export default function Landing() {
           border-radius: 8px;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justifyContent: center;
           font-weight: 900;
           transform: rotate(-3deg);
           flex-shrink: 0;
@@ -136,7 +166,7 @@ export default function Landing() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
+          justifyContent: center;
           z-index: 1;
           pointer-events: none;
           user-select: none;
@@ -148,75 +178,78 @@ export default function Landing() {
           font-family: 'Bungee', 'Impact', sans-serif;
           font-size: clamp(32px, 8.5vw, 116px);
           font-weight: 900;
-          letter-spacing: 2px;
-          line-height: 0.95;
+          letter-spacing: -1.5px;
+          text-transform: uppercase;
           margin: 0;
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: center;
-          gap: 0.2em;
-          text-shadow: 4px 4px 0px #000000;
-        }
-
-        .dark .neo-hero-title {
-          text-shadow: 5px 5px 0px #000000;
+          line-height: 0.95;
+          text-shadow: 
+            3px 3px 0px #000000,
+            6px 6px 0px #00f0ff,
+            9px 9px 0px #ff007a;
+          transform: skew(-2deg) rotate(-1deg);
         }
 
         .neo-title-taskify {
-          background: #ffe600;
-          color: #000000;
-          padding: 2px 14px;
-          border: 3px solid #000000;
-          box-shadow: 4px 4px 0px #ff007a;
-          border-radius: 12px;
-          transform: rotate(-1.5deg);
+          color: #ffffff;
+          margin-right: 10px;
         }
 
         .dark .neo-title-taskify {
-          background: #ffe600;
-          color: #000000;
-          border: 3px solid #ffffff;
-          box-shadow: 4px 4px 0px #ff007a;
+          color: #ffffff;
         }
 
         .neo-title-pro {
-          background: #ff007a;
-          color: #ffffff;
-          padding: 2px 14px;
+          color: #ffe600;
+          background: #000000;
+          padding: 0 12px;
           border: 3px solid #000000;
           box-shadow: 4px 4px 0px #00f0ff;
-          border-radius: 12px;
-          transform: rotate(2deg);
+          border-radius: 8px;
+          display: inline-block;
+          transform: rotate(3deg);
         }
 
-        .dark .neo-title-pro {
-          border: 3px solid #ffffff;
+        .neo-hero-subtitle {
+          font-size: clamp(11px, 2vw, 16px);
+          font-weight: 800;
+          letter-spacing: 1px;
+          margin-top: 14px;
+          background: #000000;
+          color: #00ff66;
+          padding: 4px 14px;
+          border: 2px solid #00ff66;
+          border-radius: 999px;
+          box-shadow: 3px 3px 0px #000000;
+          text-transform: uppercase;
         }
 
-        /* ── SPIDER-VERSE MULTIVERSE CENTERPIECE STAGE ── */
+        /* ── CENTRAL 3D ARTIFACT STAGE ── */
         .spider-multiverse-stage {
           position: absolute;
-          top: clamp(170px, 25dvh, 260px);
-          left: 50vw;
-          height: min(58dvh, 500px, 90vw);
-          width: min(58dvh, 500px, 90vw);
-          transform: translateX(-50%);
-          z-index: 5;
-          cursor: crosshair;
+          top: 52%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: min(52dvh, 480px);
+          height: min(52dvh, 480px);
+          z-index: 10;
           display: flex;
           align-items: center;
           justify-content: center;
+          cursor: grab;
+          touch-action: none;
         }
 
-        /* Comic Stickers */
+        .spider-multiverse-stage:active {
+          cursor: grabbing;
+        }
+
+        /* ── STICKER BADGES ── */
         .comic-sticker {
           position: absolute;
-          z-index: 10;
-          pointer-events: none;
+          z-index: 12;
+          padding: 8px 14px;
           border: 3px solid #000000;
           box-shadow: 4px 4px 0px #000000;
-          padding: 8px 14px;
           border-radius: 12px;
           font-weight: 900;
           font-size: 13px;
@@ -252,19 +285,19 @@ export default function Landing() {
             top: 74px !important;
           }
           .spider-multiverse-stage {
-            height: min(40dvh, 280px) !important;
-            width: min(40dvh, 280px) !important;
-            top: 160px !important;
+            height: min(42dvh, 310px) !important;
+            width: min(42dvh, 310px) !important;
+            top: 50% !important;
           }
           .mobile-hero-cta {
             display: flex !important;
           }
           .comic-sticker {
-            font-size: 10px !important;
+            font-size: 9.5px !important;
             padding: 4px 8px !important;
             border-width: 2px !important;
             box-shadow: 2px 2px 0px #000 !important;
-            bottom: 10px !important;
+            bottom: 8px !important;
           }
           .sticker-left {
             left: 8px !important;
@@ -279,17 +312,17 @@ export default function Landing() {
         .mobile-hero-cta {
           display: none;
           position: absolute;
-          bottom: clamp(65px, 12dvh, 100px);
+          bottom: clamp(55px, 10dvh, 85px);
           left: 0;
           right: 0;
           justify-content: center;
-          z-index: 15;
+          z-index: 25;
         }
       `}</style>
 
       <div className="neo-landing halftone-bg">
         {/* ── TOP COMIC NAVBAR ── */}
-        <header className="neo-navbar">
+        <header className="neo-navbar" onClick={handleResetStage}>
           {/* Brand Logo */}
           <div className="neo-brand" onClick={() => navigate('/')}>
             <div className="neo-brand-badge spider-hover-glitch">
@@ -320,32 +353,15 @@ export default function Landing() {
               <Download size={14} />
               <span>Install App</span>
             </button>
-            <button
-              onClick={() => navigate(isAuthenticated ? '/app' : '/login')}
-              className="comic-btn comic-btn-white spider-hover-glitch"
-              style={{ padding: '7px 16px', fontSize: '13px' }}
-            >
-              <span>Login</span>
-            </button>
           </div>
 
-          {/* Right Action Button & Multiverse Theme Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            <button
-              onClick={() => setShowInstallModal(true)}
-              title="Install Taskify Pro App"
-              className="comic-btn comic-btn-cyan spider-hover-glitch"
-              style={{ padding: '7px 10px', fontSize: '11px', borderRadius: '10px' }}
-            >
-              <Download size={15} />
-              <span className="hidden sm:inline">INSTALL</span>
-            </button>
-
+          {/* Right Action Controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
               onClick={toggleTheme}
-              title="Switch Universe (Theme Glitch)"
+              aria-label="Toggle Theme"
               className="comic-btn comic-btn-yellow spider-hover-glitch"
-              style={{ padding: '7px 9px', borderRadius: '10px' }}
+              style={{ padding: '7px 10px', borderRadius: '8px' }}
             >
               {darkMode ? <Sun size={16} color="#000" /> : <Moon size={16} color="#000" />}
             </button>
@@ -397,12 +413,16 @@ export default function Landing() {
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             style={{
               position: 'absolute',
               inset: 0,
               contain: 'strict',
               isolation: 'isolate',
               overflow: 'hidden',
+              touchAction: 'none',
             }}
           >
             {/* 1. NEO-BRUTALIST COMIC TITLE WITH REAL-TIME ASCII GLITCH MORPH */}
@@ -417,13 +437,15 @@ export default function Landing() {
               </h1>
             </div>
 
-            {/* 2. SPIDER-VERSE MULTIVERSE MISSION STATION (Brand New Concept Artwork) */}
+            {/* 2. SPIDER-VERSE MULTIVERSE MISSION STATION (Touch-Draggable on Phone View) */}
             <div
               ref={stationRef}
               className="spider-multiverse-stage"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               onClick={() => {
                 setIsHoveringArtwork(true);
-                setTimeout(() => setIsHoveringArtwork(false), 600);
               }}
             >
               <MultiverseStationArtifact
@@ -450,111 +472,87 @@ export default function Landing() {
               </button>
             </div>
 
-            {/* 4. Comic Sticker Callouts with ASCII hover morph */}
-            <div className="comic-sticker sticker-left spider-hover-glitch">
-              <div>💥 <AsciiGlitchText text="100% FOCUS" /></div>
-              <div style={{ fontSize: '10px', opacity: 0.85, fontWeight: 700 }}>Effortless planning.</div>
+            {/* 4. Spider-Verse Pop Badges */}
+            <div className="comic-sticker sticker-left">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Radio size={14} color="#000000" />
+                <span>MULTIVERSE OS</span>
+              </div>
             </div>
 
-            <div className="comic-sticker sticker-right spider-hover-glitch">
-              <div>⚡ <AsciiGlitchText text="ZERO DELAYS" /></div>
-              <div style={{ fontSize: '10px', opacity: 0.85, fontWeight: 700 }}>Peak momentum.</div>
+            <div className="comic-sticker sticker-right">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Layers size={14} color="#000000" />
+                <span>DIMENSION: 616</span>
+              </div>
             </div>
           </section>
-
-          {/* Comic Feature Modal */}
-          <AnimatePresence>
-            {showFeaturesModal && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                style={{
-                  position: 'fixed',
-                  inset: 0,
-                  background: 'rgba(0, 0, 0, 0.75)',
-                  backdropFilter: 'blur(8px)',
-                  zIndex: 200,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '20px',
-                }}
-                onClick={() => setShowFeaturesModal(false)}
-              >
-                <motion.div
-                  initial={{ scale: 0.9, rotate: -2, y: 20 }}
-                  animate={{ scale: 1, rotate: 0, y: 0 }}
-                  exit={{ scale: 0.9, rotate: 2, y: 20 }}
-                  onClick={(e) => e.stopPropagation()}
-                  style={{
-                    background: 'var(--bg-card)',
-                    border: '4px solid #000000',
-                    boxShadow: '10px 10px 0px #000000',
-                    borderRadius: '20px',
-                    width: '100%',
-                    maxWidth: '560px',
-                    padding: '28px',
-                    position: 'relative',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '3px solid #000000', paddingBottom: '14px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className="comic-badge" style={{ background: '#ffe600', color: '#000' }}>⚡ WEAPONS ARSENAL</span>
-                      <h2 style={{ fontSize: '20px', fontWeight: 900, textTransform: 'uppercase' }}>PRODUCTIVITY POWERS</h2>
-                    </div>
-                    <button
-                      onClick={() => setShowFeaturesModal(false)}
-                      className="comic-btn comic-btn-pink"
-                      style={{ padding: '6px', borderRadius: '8px' }}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                    {[
-                      { icon: <Kanban size={20} />, title: "KANBAN LANES", desc: "Interactive drag-and-drop mission control", bg: "#ffe600", text: "#000" },
-                      { icon: <Layers size={20} />, title: "CALENDAR GRID", desc: "Time-block and schedule operations", bg: "#00f0ff", text: "#000" },
-                      { icon: <Radio size={20} />, title: "FOCUS TIMER", desc: "Synthesized audio Pomodoro chimes", bg: "#ff007a", text: "#fff" },
-                      { icon: <Zap size={20} />, title: "POWER STATS", desc: "Productivity level rank & streak counter", bg: "#00ff66", text: "#000" },
-                    ].map((f) => (
-                      <div
-                        key={f.title}
-                        style={{
-                          padding: '16px',
-                          borderRadius: '12px',
-                          background: f.bg,
-                          color: f.text,
-                          border: '2px solid #000000',
-                          boxShadow: '3px 3px 0px #000000',
-                        }}
-                      >
-                        <div style={{ marginBottom: '8px' }}>{f.icon}</div>
-                        <h3 style={{ fontSize: '13px', fontWeight: 900, marginBottom: '4px' }}>{f.title}</h3>
-                        <p style={{ fontSize: '11px', fontWeight: 700, opacity: 0.9 }}>{f.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{ marginTop: '22px', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button
-                      onClick={() => {
-                        setShowFeaturesModal(false);
-                        navigate('/register');
-                      }}
-                      className="comic-btn comic-btn-yellow"
-                      style={{ padding: '10px 24px', fontSize: '14px' }}
-                    >
-                      <span>ENLIST NOW →</span>
-                      <ArrowRight size={16} />
-                    </button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </main>
+
+        {/* Features Modal */}
+        <AnimatePresence>
+          {showFeaturesModal && (
+            <div
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(8px)',
+                zIndex: 100,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '16px',
+              }}
+              onClick={() => setShowFeaturesModal(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '4px solid #000000',
+                  boxShadow: '8px 8px 0px #000000',
+                  borderRadius: '20px',
+                  maxWidth: '520px',
+                  width: '100%',
+                  maxHeight: '85vh',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <div style={{ padding: '16px 20px', background: '#00f0ff', color: '#000000', borderBottom: '3px solid #000000', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontWeight: 900, fontSize: '15px', textTransform: 'uppercase' }}>MISSION CAPABILITIES</span>
+                  <button onClick={() => setShowFeaturesModal(false)} className="comic-btn comic-btn-pink" style={{ padding: '4px', borderRadius: '6px' }}>
+                    <X size={16} />
+                  </button>
+                </div>
+
+                <div style={{ padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ padding: '12px', background: 'var(--bg-input)', border: '2px solid #000', borderRadius: '12px' }}>
+                    <h4 style={{ fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', color: '#ffe600' }}>⚡ Kanban Board & Lanes</h4>
+                    <p style={{ fontSize: '11px', marginTop: '4px' }}>Drag, drop, and stage missions across customized multiverse progress states.</p>
+                  </div>
+                  <div style={{ padding: '12px', background: 'var(--bg-input)', border: '2px solid #000', borderRadius: '12px' }}>
+                    <h4 style={{ fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', color: '#ff007a' }}>⏱️ Pomodoro Focus Timer</h4>
+                    <p style={{ fontSize: '11px', marginTop: '4px' }}>Sync deep work blocks with live synth chimes and confetti celebrations.</p>
+                  </div>
+                  <div style={{ padding: '12px', background: 'var(--bg-input)', border: '2px solid #000', borderRadius: '12px' }}>
+                    <h4 style={{ fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', color: '#00ff66' }}>📅 Quantum Calendar Matrix</h4>
+                    <p style={{ fontSize: '11px', marginTop: '4px' }}>Schedule, reschedule, and balance missions across days with single-tap dispatching.</p>
+                  </div>
+                  <div style={{ padding: '12px', background: 'var(--bg-input)', border: '2px solid #000', borderRadius: '12px' }}>
+                    <h4 style={{ fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', color: '#00f0ff' }}>📊 Hero Analytics & Reports</h4>
+                    <p style={{ fontSize: '11px', marginTop: '4px' }}>Track completion velocities and export official comic dossier PDFs.</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* PWA App Install Modal */}
         <InstallPwaModal

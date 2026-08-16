@@ -1,0 +1,413 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Bungee&family=JetBrains+Mono:wght@500;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-comic: 'Bungee', 'Impact', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Neo-Brutalist Pop-Art Palette (Light Mode) */
+  --bg-main: #faf8f0;
+  --bg-sidebar: #fffef5;
+  --bg-header: #fffef5;
+  --bg-card: #ffffff;
+  --bg-card-subtle: #f4f0db;
+  --bg-input: #ffffff;
+
+  /* Pop Art Colors */
+  --pop-yellow: #ffe600;
+  --pop-pink: #ff007a;
+  --pop-cyan: #00f0ff;
+  --pop-green: #00ff66;
+  --pop-purple: #9d00ff;
+  --pop-orange: #ff5500;
+  --pop-blue: #0066ff;
+
+  --neo-black: #000000;
+  --neo-white: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #222222;
+  --text-muted: #555555;
+  --text-faint: #888888;
+
+  --border-thick: 3px solid #000000;
+  --border-card: 3px solid #000000;
+  --border-subtle: 2px solid #000000;
+
+  --shadow-hard: 5px 5px 0px #000000;
+  --shadow-hard-lg: 8px 8px 0px #000000;
+  --shadow-hard-sm: 3px 3px 0px #000000;
+  --shadow-hard-hover: 7px 7px 0px #000000;
+  --shadow-hard-active: 1px 1px 0px #000000;
+}
+
+.dark {
+  /* Neo-Brutalist Comic Dark Mode */
+  --bg-main: #0c0c10;
+  --bg-sidebar: #14141a;
+  --bg-header: #14141a;
+  --bg-card: #1a1a24;
+  --bg-card-subtle: #242432;
+  --bg-input: #14141a;
+
+  --pop-yellow: #ffe600;
+  --pop-pink: #ff007a;
+  --pop-cyan: #00f0ff;
+  --pop-green: #00ff66;
+  --pop-purple: #b829ff;
+  --pop-orange: #ff6611;
+  --pop-blue: #3388ff;
+
+  --neo-black: #000000;
+  --neo-white: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+
+  --border-thick: 3px solid #ffffff;
+  --border-card: 3px solid #ffffff;
+  --border-subtle: 2px solid #ffffff;
+
+  --shadow-hard: 5px 5px 0px rgba(0, 0, 0, 0.95);
+  --shadow-hard-lg: 8px 8px 0px rgba(0, 0, 0, 0.95);
+  --shadow-hard-sm: 3px 3px 0px rgba(0, 0, 0, 0.95);
+  --shadow-hard-hover: 7px 7px 0px rgba(0, 0, 0, 0.95);
+  --shadow-hard-active: 1px 1px 0px rgba(0, 0, 0, 0.95);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Comic Book Halftone Dot Texture Background ── */
+.halftone-bg {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.09) 15%, transparent 16%);
+  background-size: 14px 14px;
+}
+
+.dark .halftone-bg {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 15%, transparent 16%);
+  background-size: 14px 14px;
+}
+
+/* Pop Art Comic Card */
+.comic-card {
+  background: var(--bg-card);
+  border: var(--border-card);
+  box-shadow: var(--shadow-hard);
+  border-radius: 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.comic-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+/* Pop Art Comic Button */
+.comic-btn {
+  background: var(--pop-yellow);
+  color: #000000;
+  border: var(--border-thick);
+  box-shadow: var(--shadow-hard);
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.comic-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+.comic-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: var(--shadow-hard-active);
+}
+
+/* Specific Comic Button Colors */
+.comic-btn-pink {
+  background: var(--pop-pink);
+  color: #ffffff;
+}
+
+.comic-btn-cyan {
+  background: var(--pop-cyan);
+  color: #000000;
+}
+
+.comic-btn-green {
+  background: var(--pop-green);
+  color: #000000;
+}
+
+.comic-btn-purple {
+  background: var(--pop-purple);
+  color: #ffffff;
+}
+
+.comic-btn-white {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Comic Sticker Badges */
+.comic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.comic-badge-rotate-left {
+  transform: rotate(-3deg);
+}
+
+.comic-badge-rotate-right {
+  transform: rotate(3deg);
+}
+
+/* Comic Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-card-subtle);
+  border-left: 2px solid #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--pop-yellow);
+  border: 2px solid #000000;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pop-pink);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pop-yellow) var(--bg-card-subtle);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   🕷️ SPIDER-VERSE MULTIVERSE GLITCH SHADERS & KEYFRAMES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Stepped Multiverse Slice Displacements */
+@keyframes spider-slice-left {
+  0% {
+    clip-path: polygon(0 0, 100% 0, 100% 32%, 0 32%);
+    transform: translate(-14px, 0) skewX(-4deg);
+    filter: drop-shadow(4px 0px 0px #00f0ff);
+  }
+  20% {
+    clip-path: polygon(0 35%, 100% 35%, 100% 68%, 0 68%);
+    transform: translate(16px, -2px) skewX(5deg);
+    filter: drop-shadow(-4px 0px 0px #ff007a);
+  }
+  40% {
+    clip-path: polygon(0 70%, 100% 70%, 100% 100%, 0 100%);
+    transform: translate(-10px, 3px) skewX(-3deg);
+    filter: drop-shadow(5px 0px 0px #00f0ff);
+  }
+  60% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 55%, 0 55%);
+    transform: translate(12px, 0) skewX(4deg);
+    filter: drop-shadow(-5px 0px 0px #ffe600);
+  }
+  80% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 85%, 0 85%);
+    transform: translate(-6px, -2px) skewX(-2deg);
+    filter: drop-shadow(3px 0px 0px #ff007a);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: translate(0, 0) skewX(0deg);
+    filter: none;
+  }
+}
+
+@keyframes spider-slice-right {
+  0% {
+    clip-path: polygon(0 25%, 100% 25%, 100% 60%, 0 60%);
+    transform: translate(14px, 0) skewX(6deg);
+    filter: drop-shadow(-5px 0px 0px #ff007a);
+  }
+  25% {
+    clip-path: polygon(0 65%, 100% 65%, 100% 95%, 0 95%);
+    transform: translate(-12px, 2px) skewX(-5deg);
+    filter: drop-shadow(4px 0px 0px #00f0ff);
+  }
+  50% {
+    clip-path: polygon(0 5%, 100% 5%, 100% 40%, 0 40%);
+    transform: translate(10px, -2px) skewX(3deg);
+    filter: drop-shadow(-4px 0px 0px #ffe600);
+  }
+  75% {
+    clip-path: polygon(0 45%, 100% 45%, 100% 80%, 0 80%);
+    transform: translate(-8px, 1px) skewX(-3deg);
+    filter: drop-shadow(3px 0px 0px #ff007a);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: translate(0, 0) skewX(0deg);
+    filter: none;
+  }
+}
+
+/* Fullscreen Multiverse Dimension Tear Overlay */
+.multiverse-tear-active {
+  animation: multiverse-screen-fracture 450ms steps(3, jump-none) forwards;
+}
+
+@keyframes multiverse-screen-fracture {
+  0% {
+    opacity: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: scale(1) translate(0, 0);
+  }
+  20% {
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%, 0 60%, 100% 60%, 100% 100%, 0 100%);
+    transform: scale(1.02) translate(-10px, 4px) skewX(-2deg);
+    filter: drop-shadow(8px 0px 0px #00f0ff) drop-shadow(-8px 0px 0px #ff007a);
+  }
+  40% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 75%, 0 75%);
+    transform: scale(0.99) translate(12px, -6px) skewX(3deg);
+    filter: drop-shadow(-10px 0px 0px #00f0ff) drop-shadow(10px 0px 0px #ffe600);
+  }
+  60% {
+    clip-path: polygon(0 30%, 100% 30%, 100% 90%, 0 90%);
+    transform: scale(1.01) translate(-6px, 2px) skewX(-1deg);
+    filter: drop-shadow(6px 0px 0px #ff007a);
+  }
+  80% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: scale(1) translate(2px, -1px);
+    filter: drop-shadow(2px 0px 0px #00f0ff);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1) translate(0, 0);
+    filter: none;
+    pointer-events: none;
+  }
+}
+
+/* Spider-Verse Chromatic Hover FX on Buttons / Titles */
+.spider-hover-glitch {
+  position: relative;
+  transition: transform 0.15s ease;
+}
+
+.spider-hover-glitch:hover {
+  animation: spider-subtle-glitch 280ms steps(2, jump-none) infinite;
+  text-shadow: 2px 0px 0px #00f0ff, -2px 0px 0px #ff007a !important;
+}
+
+@keyframes spider-subtle-glitch {
+  0% {
+    transform: translate(0, 0) skewX(0deg);
+  }
+  50% {
+    transform: translate(-3px, 1px) skewX(-2deg);
+  }
+  100% {
+    transform: translate(2px, -1px) skewX(1deg);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   💥 NEO-BRUTALIST & POP-ART COMIC TOAST NOTIFICATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.Toastify__toast {
+  border: 3px solid #000000 !important;
+  box-shadow: 5px 5px 0px #000000 !important;
+  border-radius: 12px !important;
+  font-family: var(--font-main) !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 12px 16px !important;
+  margin-bottom: 12px !important;
+}
+
+.Toastify__toast--info {
+  background: #ffe600 !important;
+  color: #000000 !important;
+}
+
+.Toastify__toast--success {
+  background: #00ff66 !important;
+  color: #000000 !important;
+}
+
+.Toastify__toast--error {
+  background: #ff007a !important;
+  color: #ffffff !important;
+}
+
+.Toastify__toast--warning {
+  background: #ff5500 !important;
+  color: #ffffff !important;
+}
+
+.Toastify__toast--default {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.Toastify__toast-body {
+  font-weight: 800 !important;
+  padding: 0 !important;
+}
+
+.Toastify__close-button {
+  color: #000000 !important;
+  opacity: 0.8 !important;
+  align-self: center !important;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+  transform: scale(1.15) !important;
+}
+
+.Toastify__progress-bar {
+  background: #000000 !important;
+  height: 4px !important;
+  opacity: 0.9 !important;
+}
+

@@ -1,0 +1,35 @@
+/* src/styles/global.css */
+:root {
+  --bg-color:  #6271a4; 
+  --box-color: #ffffff;
+  --boxx-color: #ffffff;
+  --text-color: #1e293b;
+  --input-bg: #f9fafb;
+  --input-border: #d1d5db;
+  --primary-color: #6366f1;
+  --primary-dark: #8b5cf6;
+  --shadow: rgba(0, 0, 0, 0.156);
+}
+  
+.dark {
+  --bg-color: #0f172a;
+  /* --box-color: #23385b; */
+  --boxx-color: #294753;
+  --box-color: #102026;
+  --text-color: #f1f5f9;
+  --input-bg: #334155;
+  --input-border: #475569;
+  --primary-color: #8b5cf6;
+  --primary-dark: #8b5cf6;
+  --shadow: rgb(57, 61, 61);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+

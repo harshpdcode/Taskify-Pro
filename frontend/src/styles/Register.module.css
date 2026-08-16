@@ -1,0 +1,210 @@
+.registerContainer {
+  background-color: var(--bg-color);
+  min-height: 96vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.registerCard {
+  background-color: var(--box-color);
+  color: var(--text-color);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  max-width: 30rem;
+  width: 100%;
+  box-shadow: 0 10px 25px var(--shadow);
+  position: relative;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.backButton {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--primary-color);
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-bottom: 1.5rem;
+}
+
+.errorMessage {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-left: 4px solid #dc2626;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.inputGroup label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: var(--text-color);
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  color: #000000;
+}
+
+.inputWrapper input {
+  width: 89%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: black;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.inputWrapper input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  outline: none;
+}
+
+.registerButton {
+  margin-top: 0.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.registerButton:hover {
+  background-color: var(--primary-dark);
+}
+
+.loginLink {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.loginLink span {
+  color: var(--primary-color);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.loginLink span:hover {
+  text-decoration: underline;
+}
+
+.spinner {
+  border: 2px solid white;
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  width: 1.2rem;
+  height: 1.2rem;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.themeToggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  z-index: 1000;
+  transition: color 0.3s ease;
+}
+
+
+/* Add this at the bottom of your existing Register.module.css */
+@media (max-width: 768px) {
+  .registerCard {
+    padding: 2rem;
+  }
+
+  .inputWrapper input {
+    width: 100%;
+    padding-left: 2.5rem;
+  }
+
+  .registerButton {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .registerCard {
+    padding: 1.2rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .inputIcon {
+    left: 0.6rem;
+  }
+
+  .inputWrapper input {
+    font-size: 0.95rem;
+  }
+
+  .registerButton {
+    font-size: 0.95rem;
+    padding: 0.65rem;
+  }
+}

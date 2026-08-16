@@ -1,0 +1,31 @@
+Task_manager_project/
+├── backend/
+│   ├── app.py
+│   ├── auth.py
+│   ├── task.py
+│   ├── config.py
+│   ├── extension.py
+│   ├── limiter.py
+│   ├── models.py
+│   └── __init__.py
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── TaskForm.jsx
+│   │   │   ├── TaskList.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   └── ProtectedRoute.jsx
+│   │   ├── pages/
+│   │   │   ├── Dashboard.jsx
+│   │   │   └── Home.jsx
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── styles/
+│   └── vite.config.js
+├── .env
+├── requirements.txt
+├── .gitignore
+└── README.md

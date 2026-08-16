@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Comic Halftone & Gradient -->
+    <linearGradient id="cyberBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE600"/>
+      <stop offset="60%" stop-color="#FFDD00"/>
+      <stop offset="100%" stop-color="#FF007A"/>
+    </linearGradient>
+    <filter id="comicShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="3" stdDeviation="0" flood-color="#000000"/>
+    </filter>
+  </defs>
+
+  <!-- Shadow Base -->
+  <rect x="7" y="7" width="50" height="50" rx="14" fill="#000000" />
+
+  <!-- Main Comic Badge -->
+  <rect x="4" y="4" width="50" height="50" rx="14" fill="url(#cyberBg)" stroke="#000000" stroke-width="3.5" />
+
+  <!-- Pop-Art Accent Top Bar -->
+  <path d="M 12 12 Q 29 7 46 12" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.8" />
+
+  <!-- Comic Spider-Verse Lightning Bolt -->
+  <!-- Cyan Glitch Underlay -->
+  <polygon points="34,10 16,33 27,33 22,54 44,28 32,28 38,10" fill="#00F0FF" opacity="0.75" transform="translate(1.5, 1.5)" />
+  
+  <!-- Solid Black Core Lightning -->
+  <polygon points="34,10 16,33 27,33 22,54 44,28 32,28 38,10" fill="#000000" stroke="#000000" stroke-width="2" stroke-linejoin="round" />
+
+  <!-- Electric Cyan Center Core -->
+  <polygon points="33,14 20,32 29,32 25,48 40,29 31,29 35,14" fill="#FFE600" />
+
+  <!-- White Comic Glint / Sparkle -->
+  <circle cx="43" cy="15" r="2.5" fill="#FFFFFF" stroke="#000000" stroke-width="1.5"/>
+  <circle cx="16" cy="46" r="1.5" fill="#FFFFFF" stroke="#000000" stroke-width="1"/>
+</svg>

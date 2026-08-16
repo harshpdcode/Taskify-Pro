@@ -1,0 +1,235 @@
+.wrapper {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: var(--boxx-color);
+  color: #03060a;
+  border-radius: 1rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.h2w{
+  color: var(--text-color);
+}
+/* Top bar with filter & theme toggle */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.topBar h2 {
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.controls select,
+.controls button {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background: white;
+  cursor: pointer;
+}
+
+.dark .controls select,
+.dark .controls button {
+  background: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+}
+
+.controls button:hover {
+  background-color: #e5e7eb;
+}
+
+.dark .controls button:hover {
+  background-color: #4b5563;
+}
+
+/* Loading and empty state */
+.loading,
+.empty {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #6b7280;
+  padding: 3rem;
+}
+
+/* Task cards */
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.taskCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.taskCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+}
+
+.completed {
+  background: #f0fdf4;
+  text-decoration: line-through;
+}
+
+.dark .taskCard {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+.taskText {
+  flex: 1;
+}
+
+.taskText h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.taskText p {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.dark .taskText p {
+  color: #9ca3af;
+}
+
+.taskText small {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions button {
+  padding: 0.4rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+}
+
+.actions button:hover {
+  transform: scale(1.15);
+}
+
+.actions button:nth-child(1) {
+  color: #22c55e;
+}
+
+.actions button:nth-child(2) {
+  color: #3b82f6;
+}
+
+.actions button:nth-child(3) {
+  color: #ef4444;
+}
+
+/* Edit Modal */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 25;
+}
+
+.modal h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.modal input,
+.modal textarea {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+}
+
+.modal textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.modalActions button {
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.modalActions button:first-child {
+  background: #6366f1;
+  color: white;
+}
+
+.modalActions .cancel {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.modalActions .cancel:hover {
+  background: #d1d5db;
+}

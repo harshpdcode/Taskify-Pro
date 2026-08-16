@@ -1,0 +1,78 @@
+🔐 Authentication Routes (auth.py)
+Method	Endpoint	Description	Auth Required
+POST	/api/register	Register new user	No
+POST	/api/login	Login and get JWT tokens	No
+POST	/api/refresh	Refresh access token	Refresh Token
+POST	/api/logout	Logout (invalidates token)	Yes
+GET	/api/me	Get current user profile	Yes
+GET	/api/users	List all users (for admin)	Yes
+📝 Task Routes (task.py)
+Method	Endpoint	Description	Auth Required
+GET	/api/tasks	Get all tasks for user	Yes
+POST	/api/tasks	Create new task	Yes
+PUT	/api/tasks/<int:id>	Update a task	Yes
+DELETE	/api/tasks/<int:id>	Delete a task	Yes
+🖥 Utility Routes
+Method	Endpoint	Description	Auth Required
+GET	/api/status	Check API health status	No
+🗂 Postman Collection Structure
+markdown
+Task Manager API/
+├── Auth/
+│   ├── Register User (POST /register)
+│   ├── Login User (POST /login)
+│   ├── Refresh Token (POST /refresh)
+│   ├── Logout (POST /logout)
+│   └── Get Profile (GET /me)
+│
+├── Tasks/
+│   ├── List Tasks (GET /tasks)
+│   ├── Create Task (POST /tasks)
+│   ├── Update Task (PUT /tasks/:id)
+│   └── Delete Task (DELETE /tasks/:id)
+│
+└── Utilities/
+    └── API Status (GET /status)
+📝 Sample Request Bodies
+1. Registration
+
+json
+{
+  "username": "newuser",
+  "password": "SecurePass123!"
+}
+2. Login
+
+json
+{
+  "username": "existinguser",
+  "password": "SecurePass123!"
+}
+3. Create Task
+
+json
+{
+  "title": "Buy groceries",
+  "completed": false
+}
+🔄 Flow for Testing
+POST /register → Get credentials
+
+POST /login → Get tokens
+
+Use token in:
+
+GET /me
+
+POST /tasks
+
+GET /tasks
+
+⚠️ Important Notes
+All protected routes need:
+
+http
+Authorization: Bearer <your_access_token>
+Token expires in 1 hour (configurable in app.py)
+
+Rate limited to 10 requests/minute on auth endpoints

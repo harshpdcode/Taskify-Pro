@@ -1,0 +1,247 @@
+.container {
+  padding: 1.5rem;
+  min-height: 94vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  background-color: var(--boxx-color);
+  backdrop-filter: blur(8px);
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 16px var(--shadow);
+  z-index: 10;
+  transition: background-color 0.3s ease;
+}
+
+/* Navigation Menu Toggle */
+.menuToggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.navMenu {
+  position: absolute;
+  top: 4.5rem;
+  right: 1rem;
+  background-color: var(--box-color);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 16px var(--shadow);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+.fadeIn {
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.fadeOut {
+  animation: fadeOut 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+}
+
+.navItem {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0.4rem 0.6rem;
+}
+
+.navItem:hover {
+  background-color: var(--input-bg);
+  color: var(--primary-color);
+  border-radius: 0.5rem;
+}
+
+/* Summary */
+.summary {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+.summaryCard {
+  flex: 1;
+  min-width: 260px;
+  background-color: var(--boxx-color);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 20px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+}
+
+.summaryCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px var(--shadow);
+}
+
+.summaryCard h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  color: var(--text-color);
+}
+
+/* Quick Add */
+.quickAddWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.quickAddBox {
+  display: flex;
+  flex: 1;
+  max-width: 600px;
+  gap: 0.75rem;
+  background-color: var(--boxx-color);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 12px var(--shadow);
+  transition: background-color 0.3s ease;
+}
+
+.input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: 0.5rem;
+  background-color: var(--input-bg);
+  color: #1e293b;
+  transition: all 0.3s ease;
+}
+
+.addButton {
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .summary {
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 81%;
+  }
+
+  .summaryCard {
+    width: 112%;
+  }
+
+  .quickAddBox {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input {
+    width: 94%;
+  }
+
+  .addButton {
+    width: 100%;
+  }
+
+  .navMenu {
+    right: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .navbar {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .summaryCard h3 {
+    font-size: 1rem;
+  }
+
+  .addButton {
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .summaryCard {
+    padding: 1rem;
+  }
+
+  .quickAddBox {
+    padding: 0.75rem;
+  }
+
+  .input {
+    font-size: 0.95rem;
+  }
+
+  .addButton {
+    font-size: 0.95rem;
+  }
+
+  .logoutBtn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}

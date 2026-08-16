@@ -1,0 +1,49 @@
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python & Backend
+__pycache__/
+backend/__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+backend/.venv/
+env/
+venv/
+ENV/
+*.db
+*.sqlite
+*.sqlite3
+instance/
+backend/instance/
+.pytest_cache/
+
+# Environment Variables
+.env
+backend/.env
+frontend/.env
+*.env.local
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary media & artifacts
+.system_generated/
+.tempmediaStorage/
+scratch/

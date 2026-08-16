@@ -28,10 +28,10 @@ interface DockItem {
 const leftItems: DockItem[] = [
   { id: 'list', label: 'TASKS', icon: CheckSquare, color: '#000000', bg: '#ffe600' },
   { id: 'kanban', label: 'LANES', icon: Kanban, color: '#000000', bg: '#00f0ff' },
-  { id: 'calendar', label: 'CALENDAR', icon: CalendarIcon, color: '#000000', bg: '#00ff66' },
 ];
 
 const rightItems: DockItem[] = [
+  { id: 'calendar', label: 'CALENDAR', icon: CalendarIcon, color: '#000000', bg: '#00ff66' },
   { id: 'pomodoro', label: 'TIMER', icon: Timer, color: '#ffffff', bg: '#ff007a' },
   { id: 'analytics', label: 'STATS', icon: BarChart3, color: '#ffffff', bg: '#9d00ff' },
 ];
@@ -47,7 +47,7 @@ export default function MobileBottomDock({
   const [hoveredView, setHoveredView] = useState<ViewMode | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Drag-to-select gesture handler
+  // Drag-to-select gesture handler for tabs track
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!dockRef.current || !isDragging) return;
     const rect = dockRef.current.getBoundingClientRect();
@@ -79,7 +79,10 @@ export default function MobileBottomDock({
     return (
       <motion.button
         key={item.id}
-        onClick={() => onViewChange(item.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onViewChange(item.id);
+        }}
         whileTap={{ scale: 0.92 }}
         animate={{
           scale: isTargeted || isActive ? 1.05 : 0.98,
@@ -149,7 +152,6 @@ export default function MobileBottomDock({
         width: '100vw',
         zIndex: 50,
         boxSizing: 'border-box',
-        touchAction: 'none',
         userSelect: 'none',
       }}
       className="lg:hidden"
@@ -183,41 +185,48 @@ export default function MobileBottomDock({
           boxSizing: 'border-box',
         }}
       >
-        {/* Left 3 Tabs: Tasks, Lanes, Calendar */}
-        <div style={{ display: 'flex', alignItems: 'center', flex: 3, gap: '2px', minWidth: 0 }}>
+        {/* Left 2 Tabs: Tasks, Lanes */}
+        <div style={{ display: 'flex', alignItems: 'center', flex: 2, gap: '2px', minWidth: 0 }}>
           {leftItems.map(renderTab)}
         </div>
 
         {/* ── CENTER HERO POP FAB (+) BUTTON ── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', flexShrink: 0, position: 'relative' }}>
+        <div
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', flexShrink: 0, position: 'relative' }}
+        >
           <motion.button
-            onClick={onOpenQuickAdd}
-            whileTap={{ scale: 0.86, rotate: 90 }}
-            whileHover={{ scale: 1.1, rotate: 15 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenQuickAdd();
+            }}
+            whileTap={{ scale: 0.85, rotate: 90 }}
+            whileHover={{ scale: 1.12, rotate: 15 }}
             style={{
-              width: '46px',
-              height: '46px',
+              width: '48px',
+              height: '48px',
               borderRadius: '14px',
               background: 'linear-gradient(135deg, #ffe600 0%, #ff007a 100%)',
               color: '#000000',
               border: '3px solid #000000',
-              boxShadow: '3px 3px 0px #000000, 0 4px 14px rgba(255, 0, 122, 0.45)',
+              boxShadow: '3px 3px 0px #000000, 0 4px 14px rgba(255, 0, 122, 0.5)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              marginTop: '-16px',
+              marginTop: '-18px',
               zIndex: 10,
               transform: 'rotate(-2deg)',
             }}
             title="Create New Mission (Task)"
           >
-            <Plus size={24} strokeWidth={3.5} color="#ffffff" />
+            <Plus size={26} strokeWidth={3.5} color="#ffffff" />
           </motion.button>
         </div>
 
-        {/* Right 2 Tabs: Timer, Stats */}
-        <div style={{ display: 'flex', alignItems: 'center', flex: 2, gap: '2px', minWidth: 0 }}>
+        {/* Right 3 Tabs: Calendar, Timer, Stats */}
+        <div style={{ display: 'flex', alignItems: 'center', flex: 3, gap: '2px', minWidth: 0 }}>
           {rightItems.map(renderTab)}
         </div>
       </div>

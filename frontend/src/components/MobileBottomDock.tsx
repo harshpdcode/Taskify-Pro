@@ -20,18 +20,17 @@ interface MobileBottomDockProps {
 interface DockItem {
   id: ViewMode;
   label: string;
-  shortLabel: string;
   icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
   color: string;
   bg: string;
 }
 
 const dockItems: DockItem[] = [
-  { id: 'list', label: 'TASKS', shortLabel: 'TASKS', icon: CheckSquare, color: '#000000', bg: '#ffe600' },
-  { id: 'kanban', label: 'KANBAN', shortLabel: 'LANES', icon: Kanban, color: '#000000', bg: '#00f0ff' },
-  { id: 'calendar', label: 'CALENDAR', shortLabel: 'CALENDAR', icon: CalendarIcon, color: '#000000', bg: '#00ff66' },
-  { id: 'pomodoro', label: 'TIMER', shortLabel: 'TIMER', icon: Timer, color: '#ffffff', bg: '#ff007a' },
-  { id: 'analytics', label: 'STATS', shortLabel: 'STATS', icon: BarChart3, color: '#ffffff', bg: '#9d00ff' },
+  { id: 'list', label: 'TASKS', icon: CheckSquare, color: '#000000', bg: '#ffe600' },
+  { id: 'kanban', label: 'LANES', icon: Kanban, color: '#000000', bg: '#00f0ff' },
+  { id: 'calendar', label: 'CALENDAR', icon: CalendarIcon, color: '#000000', bg: '#00ff66' },
+  { id: 'pomodoro', label: 'TIMER', icon: Timer, color: '#ffffff', bg: '#ff007a' },
+  { id: 'analytics', label: 'STATS', icon: BarChart3, color: '#ffffff', bg: '#9d00ff' },
 ];
 
 export default function MobileBottomDock({
@@ -43,7 +42,7 @@ export default function MobileBottomDock({
   const [hoveredView, setHoveredView] = useState<ViewMode | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Handle drag / pointer movement across the dock to switch menu
+  // Drag-to-select gesture handler
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!dockRef.current || !isDragging) return;
     const rect = dockRef.current.getBoundingClientRect();
@@ -68,126 +67,132 @@ export default function MobileBottomDock({
   };
 
   return (
-    <div
+    <nav
+      aria-label="Mobile Navigation"
       style={{
         position: 'fixed',
-        bottom: '10px',
-        left: '10px',
-        right: '10px',
-        zIndex: 45,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        pointerEvents: 'none',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: '100vw',
+        zIndex: 50,
+        boxSizing: 'border-box',
+        touchAction: 'none',
+        userSelect: 'none',
       }}
       className="lg:hidden"
     >
-      <motion.div
+      {/* Multiverse Neon Dividing Line across top */}
+      <div
+        style={{
+          width: '100%',
+          height: '3px',
+          background: 'linear-gradient(90deg, #ffe600, #ff007a, #00f0ff, #00ff66)',
+        }}
+      />
+
+      {/* Main Solid Dock Bar */}
+      <div
         ref={dockRef}
-        initial={{ y: 60, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{
           width: '100%',
-          maxWidth: '430px',
-          background: 'var(--bg-sidebar)',
-          border: '3px solid #000000',
-          borderRadius: '22px',
-          boxShadow: isDragging ? '0 8px 24px rgba(0,0,0,0.5), 4px 4px 0px #ffe600' : '4px 4px 0px #000000',
-          padding: '6px 8px',
+          background: 'var(--bg-card)',
+          borderTop: '3px solid #000000',
+          boxShadow: '0 -4px 0px #000000, 0 -10px 24px rgba(0,0,0,0.5)',
+          padding: '6px 8px calc(8px + env(safe-area-inset-bottom, 6px))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '4px',
-          pointerEvents: 'auto',
-          userSelect: 'none',
-          touchAction: 'none',
-          position: 'relative',
-          transition: 'box-shadow 0.2s ease',
+          boxSizing: 'border-box',
         }}
       >
-        {/* Active Floating Comic Badge (Follows current tab) */}
-        {dockItems.map((item) => {
-          const isActive = currentView === item.id;
-          const isTargeted = hoveredView === item.id;
-          const Icon = item.icon;
+        {/* Navigation Tabs */}
+        <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: '4px', minWidth: 0 }}>
+          {dockItems.map((item) => {
+            const isActive = currentView === item.id;
+            const isTargeted = hoveredView === item.id;
+            const Icon = item.icon;
 
-          return (
-            <motion.button
-              key={item.id}
-              onClick={() => onViewChange(item.id)}
-              whileTap={{ scale: 0.92 }}
-              animate={{
-                scale: isTargeted || isActive ? 1.05 : 0.98,
-                y: isTargeted || isActive ? -2 : 0,
-              }}
-              style={{
-                flex: 1,
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '6px 2px',
-                borderRadius: '14px',
-                background: isActive ? item.bg : 'transparent',
-                color: isActive ? item.color : 'var(--text-secondary)',
-                border: isActive ? '2px solid #000000' : '2px solid transparent',
-                boxShadow: isActive ? '2px 2px 0px #000000' : 'none',
-                cursor: 'pointer',
-                transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
-              }}
-            >
-              {/* Icon */}
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
-              </div>
-
-              {/* Label */}
-              <span
+            return (
+              <motion.button
+                key={item.id}
+                onClick={() => onViewChange(item.id)}
+                whileTap={{ scale: 0.92 }}
+                animate={{
+                  scale: isTargeted || isActive ? 1.04 : 0.98,
+                  y: isTargeted || isActive ? -2 : 0,
+                }}
                 style={{
-                  fontSize: '9px',
-                  fontWeight: 900,
-                  letterSpacing: '0.4px',
-                  marginTop: '3px',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
+                  flex: 1,
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '7px 2px 5px',
+                  borderRadius: '12px',
+                  background: isActive ? item.bg : 'transparent',
+                  color: isActive ? item.color : 'var(--text-secondary)',
+                  border: isActive ? '2px solid #000000' : '2px solid transparent',
+                  boxShadow: isActive ? '2px 2px 0px #000000' : 'none',
+                  cursor: 'pointer',
+                  minWidth: 0,
+                  transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
                 }}
               >
-                {item.shortLabel}
-              </span>
+                {/* Icon */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon size={18} strokeWidth={isActive ? 2.8 : 2} />
+                </div>
 
-              {/* Active Glitch Underline Indicator */}
-              {isActive && (
-                <motion.div
-                  layoutId="activeDockPill"
+                {/* Label */}
+                <span
                   style={{
-                    position: 'absolute',
-                    bottom: '-2px',
-                    width: '14px',
-                    height: '3px',
-                    background: '#000000',
-                    borderRadius: '2px',
+                    fontSize: '8.5px',
+                    fontWeight: 900,
+                    letterSpacing: '0.4px',
+                    marginTop: '2px',
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap',
+                    lineHeight: 1.1,
                   }}
-                />
-              )}
-            </motion.button>
-          );
-        })}
+                >
+                  {item.label}
+                </span>
 
-        {/* Quick Add Mission Floating Button (+) */}
+                {/* Active Indicator Strip */}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeDockUnderline"
+                    style={{
+                      position: 'absolute',
+                      bottom: '1px',
+                      width: '12px',
+                      height: '2.5px',
+                      background: item.color,
+                      borderRadius: '2px',
+                    }}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Quick Add FAB (+) Button */}
         <motion.button
           onClick={onOpenQuickAdd}
           whileTap={{ scale: 0.88 }}
-          whileHover={{ scale: 1.08 }}
+          whileHover={{ scale: 1.06 }}
           style={{
             width: '42px',
             height: '42px',
-            borderRadius: '14px',
+            borderRadius: '12px',
             background: '#ffe600',
             color: '#000000',
             border: '2px solid #000000',
@@ -198,13 +203,13 @@ export default function MobileBottomDock({
             cursor: 'pointer',
             flexShrink: 0,
             transform: 'rotate(-2deg)',
-            marginLeft: '2px',
+            marginLeft: '4px',
           }}
-          title="Create New Mission (Task)"
+          title="Create New Mission"
         >
-          <Plus size={22} strokeWidth={3} />
+          <Plus size={22} strokeWidth={3.2} />
         </motion.button>
-      </motion.div>
-    </div>
+      </div>
+    </nav>
   );
 }

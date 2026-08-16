@@ -219,7 +219,7 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen halftone-bg" style={{ backgroundColor: 'var(--bg-main)', color: 'var(--text-primary)', position: 'relative' }}>
+    <div className="min-h-screen halftone-bg" style={{ backgroundColor: 'var(--bg-main)', color: 'var(--text-primary)', position: 'relative', overflowX: 'hidden', width: '100%' }}>
       {/* Top Scroll Progress Indicator */}
       <motion.div
         style={{
@@ -239,7 +239,7 @@ export default function Home() {
       {/* Main Content Area — Full Screen Width */}
       <div
         className="flex flex-col min-h-screen relative z-10"
-        style={{ marginLeft: 0 }}
+        style={{ marginLeft: 0, width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}
         id="main-content-area"
       >
         {/* Sticky Header with Integrated Controls & View Switcher */}
@@ -264,11 +264,12 @@ export default function Home() {
         <main
           style={{
             flex: 1,
-            padding: isDesktop ? '20px 28px 40px' : '10px 10px 96px',
+            padding: isDesktop ? '20px 28px 40px' : '10px 12px 115px',
             maxWidth: '1440px',
             width: '100%',
             margin: '0 auto',
             boxSizing: 'border-box',
+            overflowX: 'hidden',
           }}
         >
 

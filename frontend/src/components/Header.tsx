@@ -260,7 +260,7 @@ export default function Header({
           )}
         </div>
 
-        {/* Streak Stamp */}
+        {/* Streak Stamp (Desktop only) */}
         {isDesktop && (
           <div
             className="comic-badge comic-badge-rotate-left"
@@ -276,86 +276,90 @@ export default function Header({
           </div>
         )}
 
-        {/* New Task button */}
-        <motion.button
-          whileTap={{ scale: 0.92 }}
-          whileHover={{ scale: 1.05 }}
-          onClick={onOpenQuickAdd}
-          className="comic-btn comic-btn-pink"
-          style={{ padding: isDesktop ? '7px 14px' : '6px 10px', fontSize: isDesktop ? '12px' : '11px', borderRadius: '10px' }}
-        >
-          <Plus size={15} strokeWidth={3} />
-          {isDesktop && <span>NEW TASK</span>}
-        </motion.button>
-
-        {/* Notification Bell */}
-        <div style={{ position: 'relative' }} ref={notifRef}>
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            aria-label="Notifications"
-            className="comic-btn comic-btn-yellow"
-            style={{ padding: '7px', borderRadius: '10px' }}
+        {/* New Task button (Desktop only, mobile has FAB in bottom dock) */}
+        {isDesktop && (
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            whileHover={{ scale: 1.05 }}
+            onClick={onOpenQuickAdd}
+            className="comic-btn comic-btn-pink"
+            style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '10px' }}
           >
-            <Bell size={16} />
-            <span style={{
-              position: 'absolute', top: '-3px', right: '-3px',
-              width: '9px', height: '9px', borderRadius: '50%',
-              background: '#ff007a', border: '2px solid #000',
-            }} />
-          </button>
+            <Plus size={15} strokeWidth={3} />
+            <span>NEW TASK</span>
+          </motion.button>
+        )}
 
-          {/* Notifications Dropdown */}
-          <AnimatePresence>
-            {showNotifications && (
-              <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                transition={{ duration: 0.12 }}
-                style={{
-                  position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-                  width: '290px', borderRadius: '14px', padding: '14px',
-                  background: 'var(--bg-card)',
-                  border: '3px solid #000000',
-                  boxShadow: '5px 5px 0px #000000',
-                  zIndex: 100,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', borderBottom: '2px solid #000', paddingBottom: '6px' }}>
-                  <span style={{ fontWeight: 900, fontSize: '12px', textTransform: 'uppercase' }}>MISSIONS LOG</span>
-                  <span className="comic-badge" style={{ background: '#ff007a', color: '#fff', fontSize: '9px' }}>2 ACTIVE</span>
-                </div>
+        {/* Notification Bell (Desktop only) */}
+        {isDesktop && (
+          <div style={{ position: 'relative' }} ref={notifRef}>
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              aria-label="Notifications"
+              className="comic-btn comic-btn-yellow"
+              style={{ padding: '7px', borderRadius: '10px' }}
+            >
+              <Bell size={16} />
+              <span style={{
+                position: 'absolute', top: '-3px', right: '-3px',
+                width: '9px', height: '9px', borderRadius: '50%',
+                background: '#ff007a', border: '2px solid #000',
+              }} />
+            </button>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{
-                    display: 'flex', alignItems: 'flex-start', gap: '8px',
-                    padding: '8px 10px', borderRadius: '10px',
-                    background: '#ffe600', color: '#000',
-                    border: '2px solid #000', boxShadow: '2px 2px 0px #000',
-                  }}>
-                    <Zap size={15} color="#000" fill="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
-                    <div>
-                      <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '2px' }}>Multiverse Sync Active</p>
-                      <p style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.3 }}>Cloud PostgreSQL database is online.</p>
+            {/* Notifications Dropdown */}
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                  transition={{ duration: 0.12 }}
+                  style={{
+                    position: 'absolute', top: 'calc(100% + 10px)', right: 0,
+                    width: '290px', borderRadius: '14px', padding: '14px',
+                    background: 'var(--bg-card)',
+                    border: '3px solid #000000',
+                    boxShadow: '5px 5px 0px #000000',
+                    zIndex: 100,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', borderBottom: '2px solid #000', paddingBottom: '6px' }}>
+                    <span style={{ fontWeight: 900, fontSize: '12px', textTransform: 'uppercase' }}>MISSIONS LOG</span>
+                    <span className="comic-badge" style={{ background: '#ff007a', color: '#fff', fontSize: '9px' }}>2 ACTIVE</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'flex-start', gap: '8px',
+                      padding: '8px 10px', borderRadius: '10px',
+                      background: '#ffe600', color: '#000',
+                      border: '2px solid #000', boxShadow: '2px 2px 0px #000',
+                    }}>
+                      <Zap size={15} color="#000" fill="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
+                      <div>
+                        <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '2px' }}>Multiverse Sync Active</p>
+                        <p style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.3 }}>Cloud PostgreSQL database is online.</p>
+                      </div>
+                    </div>
+                    <div style={{
+                      display: 'flex', alignItems: 'flex-start', gap: '8px',
+                      padding: '8px 10px', borderRadius: '10px',
+                      background: '#00ff66', color: '#000',
+                      border: '2px solid #000', boxShadow: '2px 2px 0px #000',
+                    }}>
+                      <CheckCircle2 size={15} color="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
+                      <div>
+                        <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '2px' }}>Streak Protected!</p>
+                        <p style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.3 }}>{streakCount} Day focus streak maintained.</p>
+                      </div>
                     </div>
                   </div>
-                  <div style={{
-                    display: 'flex', alignItems: 'flex-start', gap: '8px',
-                    padding: '8px 10px', borderRadius: '10px',
-                    background: '#00ff66', color: '#000',
-                    border: '2px solid #000', boxShadow: '2px 2px 0px #000',
-                  }}>
-                    <CheckCircle2 size={15} color="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
-                    <div>
-                      <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '2px' }}>Streak Protected!</p>
-                      <p style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.3 }}>{streakCount} Day focus streak maintained.</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
 
         {/* ── Interactive User Profile & Quick Action Menu Dropdown ── */}
         <div style={{ position: 'relative' }} ref={profileRef}>

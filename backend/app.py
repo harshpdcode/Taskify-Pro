@@ -6,7 +6,7 @@ from extensions import db
 import os
 from mail_utils import init_mail
 from flask_migrate import Migrate
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from limiter import limiter, init_app

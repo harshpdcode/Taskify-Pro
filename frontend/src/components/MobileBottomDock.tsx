@@ -25,13 +25,18 @@ interface DockItem {
   bg: string;
 }
 
-const dockItems: DockItem[] = [
+const leftItems: DockItem[] = [
   { id: 'list', label: 'TASKS', icon: CheckSquare, color: '#000000', bg: '#ffe600' },
   { id: 'kanban', label: 'LANES', icon: Kanban, color: '#000000', bg: '#00f0ff' },
   { id: 'calendar', label: 'CALENDAR', icon: CalendarIcon, color: '#000000', bg: '#00ff66' },
+];
+
+const rightItems: DockItem[] = [
   { id: 'pomodoro', label: 'TIMER', icon: Timer, color: '#ffffff', bg: '#ff007a' },
   { id: 'analytics', label: 'STATS', icon: BarChart3, color: '#ffffff', bg: '#9d00ff' },
 ];
+
+const allItems = [...leftItems, ...rightItems];
 
 export default function MobileBottomDock({
   currentView,
@@ -48,8 +53,8 @@ export default function MobileBottomDock({
     const rect = dockRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentage = Math.max(0, Math.min(1, x / rect.width));
-    const targetIndex = Math.min(dockItems.length - 1, Math.floor(percentage * dockItems.length));
-    const targetItem = dockItems[targetIndex];
+    const targetIndex = Math.min(allItems.length - 1, Math.floor(percentage * allItems.length));
+    const targetItem = allItems[targetIndex];
     if (targetItem && targetItem.id !== hoveredView) {
       setHoveredView(targetItem.id);
       onViewChange(targetItem.id);
@@ -64,6 +69,73 @@ export default function MobileBottomDock({
   const handlePointerUp = () => {
     setIsDragging(false);
     setHoveredView(null);
+  };
+
+  const renderTab = (item: DockItem) => {
+    const isActive = currentView === item.id;
+    const isTargeted = hoveredView === item.id;
+    const Icon = item.icon;
+
+    return (
+      <motion.button
+        key={item.id}
+        onClick={() => onViewChange(item.id)}
+        whileTap={{ scale: 0.92 }}
+        animate={{
+          scale: isTargeted || isActive ? 1.05 : 0.98,
+          y: isTargeted || isActive ? -2 : 0,
+        }}
+        style={{
+          flex: 1,
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '6px 2px 4px',
+          borderRadius: '10px',
+          background: isActive ? item.bg : 'transparent',
+          color: isActive ? item.color : 'var(--text-secondary)',
+          border: isActive ? '2px solid #000000' : '2px solid transparent',
+          boxShadow: isActive ? '2px 2px 0px #000000' : 'none',
+          cursor: 'pointer',
+          minWidth: 0,
+          transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Icon size={17} strokeWidth={isActive ? 2.8 : 2} />
+        </div>
+
+        <span
+          style={{
+            fontSize: '8px',
+            fontWeight: 900,
+            letterSpacing: '0.3px',
+            marginTop: '2px',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            lineHeight: 1.1,
+          }}
+        >
+          {item.label}
+        </span>
+
+        {isActive && (
+          <motion.div
+            layoutId="activeDockUnderline"
+            style={{
+              position: 'absolute',
+              bottom: '1px',
+              width: '10px',
+              height: '2px',
+              background: item.color,
+              borderRadius: '2px',
+            }}
+          />
+        )}
+      </motion.button>
+    );
   };
 
   return (
@@ -103,112 +175,51 @@ export default function MobileBottomDock({
           background: 'var(--bg-card)',
           borderTop: '3px solid #000000',
           boxShadow: '0 -4px 0px #000000, 0 -10px 24px rgba(0,0,0,0.5)',
-          padding: '6px 8px calc(8px + env(safe-area-inset-bottom, 6px))',
+          padding: '4px 6px calc(6px + env(safe-area-inset-bottom, 4px))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '4px',
+          gap: '2px',
           boxSizing: 'border-box',
         }}
       >
-        {/* Navigation Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: '4px', minWidth: 0 }}>
-          {dockItems.map((item) => {
-            const isActive = currentView === item.id;
-            const isTargeted = hoveredView === item.id;
-            const Icon = item.icon;
-
-            return (
-              <motion.button
-                key={item.id}
-                onClick={() => onViewChange(item.id)}
-                whileTap={{ scale: 0.92 }}
-                animate={{
-                  scale: isTargeted || isActive ? 1.04 : 0.98,
-                  y: isTargeted || isActive ? -2 : 0,
-                }}
-                style={{
-                  flex: 1,
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '7px 2px 5px',
-                  borderRadius: '12px',
-                  background: isActive ? item.bg : 'transparent',
-                  color: isActive ? item.color : 'var(--text-secondary)',
-                  border: isActive ? '2px solid #000000' : '2px solid transparent',
-                  boxShadow: isActive ? '2px 2px 0px #000000' : 'none',
-                  cursor: 'pointer',
-                  minWidth: 0,
-                  transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
-                }}
-              >
-                {/* Icon */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon size={18} strokeWidth={isActive ? 2.8 : 2} />
-                </div>
-
-                {/* Label */}
-                <span
-                  style={{
-                    fontSize: '8.5px',
-                    fontWeight: 900,
-                    letterSpacing: '0.4px',
-                    marginTop: '2px',
-                    textTransform: 'uppercase',
-                    whiteSpace: 'nowrap',
-                    lineHeight: 1.1,
-                  }}
-                >
-                  {item.label}
-                </span>
-
-                {/* Active Indicator Strip */}
-                {isActive && (
-                  <motion.div
-                    layoutId="activeDockUnderline"
-                    style={{
-                      position: 'absolute',
-                      bottom: '1px',
-                      width: '12px',
-                      height: '2.5px',
-                      background: item.color,
-                      borderRadius: '2px',
-                    }}
-                  />
-                )}
-              </motion.button>
-            );
-          })}
+        {/* Left 3 Tabs: Tasks, Lanes, Calendar */}
+        <div style={{ display: 'flex', alignItems: 'center', flex: 3, gap: '2px', minWidth: 0 }}>
+          {leftItems.map(renderTab)}
         </div>
 
-        {/* Quick Add FAB (+) Button */}
-        <motion.button
-          onClick={onOpenQuickAdd}
-          whileTap={{ scale: 0.88 }}
-          whileHover={{ scale: 1.06 }}
-          style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '12px',
-            background: '#ffe600',
-            color: '#000000',
-            border: '2px solid #000000',
-            boxShadow: '3px 3px 0px #ff007a',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            flexShrink: 0,
-            transform: 'rotate(-2deg)',
-            marginLeft: '4px',
-          }}
-          title="Create New Mission"
-        >
-          <Plus size={22} strokeWidth={3.2} />
-        </motion.button>
+        {/* ── CENTER HERO POP FAB (+) BUTTON ── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', flexShrink: 0, position: 'relative' }}>
+          <motion.button
+            onClick={onOpenQuickAdd}
+            whileTap={{ scale: 0.86, rotate: 90 }}
+            whileHover={{ scale: 1.1, rotate: 15 }}
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #ffe600 0%, #ff007a 100%)',
+              color: '#000000',
+              border: '3px solid #000000',
+              boxShadow: '3px 3px 0px #000000, 0 4px 14px rgba(255, 0, 122, 0.45)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              marginTop: '-16px',
+              zIndex: 10,
+              transform: 'rotate(-2deg)',
+            }}
+            title="Create New Mission (Task)"
+          >
+            <Plus size={24} strokeWidth={3.5} color="#ffffff" />
+          </motion.button>
+        </div>
+
+        {/* Right 2 Tabs: Timer, Stats */}
+        <div style={{ display: 'flex', alignItems: 'center', flex: 2, gap: '2px', minWidth: 0 }}>
+          {rightItems.map(renderTab)}
+        </div>
       </div>
     </nav>
   );

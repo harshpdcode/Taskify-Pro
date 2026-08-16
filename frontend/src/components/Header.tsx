@@ -106,13 +106,13 @@ export default function Header({
       style={{
         position: 'sticky',
         top: 0,
-        zIndex: 30,
+        zIndex: 100,
         width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '12px',
-        padding: isDesktop ? '10px 24px' : '8px 12px',
+        gap: isDesktop ? '10px' : '6px',
+        padding: isDesktop ? '8px 16px' : '6px 10px',
         background: 'var(--bg-header)',
         borderBottom: 'var(--border-thick)',
         boxShadow: '0 3px 0px #000000',
@@ -121,21 +121,21 @@ export default function Header({
       }}
     >
       {/* ── Left: Brand & Logo ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: isDesktop ? '10px' : '6px', flexShrink: 0 }}>
         <div
           onClick={() => onViewChange('list')}
-          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
         >
           <motion.div
             whileHover={{ rotate: 10, scale: 1.08 }}
             whileTap={{ scale: 0.94 }}
             style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
+              width: isDesktop ? '34px' : '30px',
+              height: isDesktop ? '34px' : '30px',
+              borderRadius: '9px',
               background: '#ffe600',
-              border: '3px solid #000000',
-              boxShadow: '3px 3px 0px #000000',
+              border: '2px solid #000000',
+              boxShadow: '2px 2px 0px #000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -143,15 +143,15 @@ export default function Header({
               flexShrink: 0,
             }}
           >
-            <Zap size={20} color="#000000" fill="#000000" />
+            <Zap size={isDesktop ? 18 : 16} color="#000000" fill="#000000" />
           </motion.div>
 
           <div>
-            <div style={{ fontWeight: 900, fontSize: isDesktop ? '17px' : '15px', textTransform: 'uppercase', letterSpacing: '-0.4px', lineHeight: 1.1 }}>
+            <div style={{ fontWeight: 900, fontSize: isDesktop ? '15px' : '13px', textTransform: 'uppercase', letterSpacing: '-0.3px', lineHeight: 1.1 }}>
               Taskify <span style={{ color: '#ff007a' }}>Pro</span>
             </div>
             {isDesktop && (
-              <div className="comic-badge" style={{ background: '#00f0ff', color: '#000000', padding: '1px 5px', fontSize: '9px', marginTop: '2px' }}>
+              <div className="comic-badge" style={{ background: '#00f0ff', color: '#000000', padding: '1px 5px', fontSize: '8.5px', marginTop: '1px' }}>
                 MULTIVERSE OS ⚡
               </div>
             )}
@@ -167,10 +167,11 @@ export default function Header({
             alignItems: 'center',
             background: 'var(--bg-card)',
             border: '2px solid #000000',
-            boxShadow: '3px 3px 0px #000000',
-            borderRadius: '14px',
-            padding: '4px',
-            gap: '4px',
+            boxShadow: '2px 2px 0px #000000',
+            borderRadius: '12px',
+            padding: '3px',
+            gap: '2px',
+            flexShrink: 0,
           }}
         >
           {navItems.map((item) => {
@@ -186,12 +187,12 @@ export default function Header({
                   position: 'relative',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 14px',
-                  borderRadius: '10px',
-                  fontSize: '11px',
+                  gap: '5px',
+                  padding: '5px 10px',
+                  borderRadius: '8px',
+                  fontSize: '10.5px',
                   fontWeight: 900,
-                  letterSpacing: '0.5px',
+                  letterSpacing: '0.4px',
                   cursor: 'pointer',
                   border: isActive ? '2px solid #000000' : '2px solid transparent',
                   background: isActive ? item.bg : 'transparent',
@@ -200,7 +201,7 @@ export default function Header({
                   transition: 'all 0.15s ease',
                 }}
               >
-                <Icon size={14} strokeWidth={2.5} />
+                <Icon size={13} strokeWidth={2.5} />
                 <span>{item.label}</span>
               </motion.button>
             );
@@ -208,14 +209,14 @@ export default function Header({
         </div>
       )}
 
-      {/* ── Right: Search + Streak + New Task + Notifications + Profile Dropdown ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: isDesktop ? '10px' : '6px', flexShrink: 0 }}>
+      {/* ── Right Controls: Search + Streak + New Task + Theme Switcher + Notifications + Profile ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: isDesktop ? '8px' : '5px', flexShrink: 0, minWidth: 0 }}>
         {/* Comic Search bar */}
-        <div style={{ position: 'relative', width: isDesktop ? '200px' : '130px' }}>
+        <div style={{ position: 'relative', width: isDesktop ? '150px' : '100px', flexShrink: 1 }}>
           <Search
-            size={14}
+            size={13}
             color="#000000"
-            style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+            style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
           />
           <input
             type="text"
@@ -226,17 +227,17 @@ export default function Header({
             onBlur={() => setSearchFocused(false)}
             style={{
               width: '100%',
-              height: '34px',
-              borderRadius: '10px',
-              paddingLeft: '30px',
-              paddingRight: isDesktop ? '38px' : '8px',
-              fontSize: isDesktop ? '11px' : '10px',
+              height: '32px',
+              borderRadius: '8px',
+              paddingLeft: '26px',
+              paddingRight: isDesktop ? '32px' : '6px',
+              fontSize: '10px',
               fontWeight: 800,
-              letterSpacing: '0.4px',
+              letterSpacing: '0.3px',
               color: 'var(--text-primary)',
               background: 'var(--bg-input)',
               border: '2px solid #000000',
-              boxShadow: searchFocused ? '2px 2px 0px #ffe600' : '2px 2px 0px #000000',
+              boxShadow: searchFocused ? '2px 2px 0px #ffe600' : '1px 1px 0px #000000',
               outline: 'none',
               transition: 'all 0.15s ease',
               boxSizing: 'border-box',
@@ -246,15 +247,15 @@ export default function Header({
             <button
               onClick={onOpenCommandPalette}
               style={{
-                position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)',
+                position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)',
                 display: 'flex', alignItems: 'center', gap: '2px',
-                padding: '2px 5px', borderRadius: '5px', border: '1px solid #000',
+                padding: '1px 4px', borderRadius: '4px', border: '1px solid #000',
                 background: '#ffe600', color: '#000', cursor: 'pointer',
-                fontSize: '10px', fontWeight: 900,
+                fontSize: '9px', fontWeight: 900,
                 boxShadow: '1px 1px 0px #000',
               }}
             >
-              <Command size={10} />
+              <Command size={9} />
               <span>K</span>
             </button>
           )}
@@ -267,25 +268,41 @@ export default function Header({
             style={{
               background: '#ffe600',
               color: '#000000',
-              padding: '5px 10px',
-              fontSize: '11px',
+              padding: '4px 8px',
+              fontSize: '10.5px',
             }}
           >
-            <Flame size={14} color="#ff007a" fill="#ff007a" />
-            <span><AsciiGlitchText text={`${streakCount}D STREAK`} /></span>
+            <Flame size={13} color="#ff007a" fill="#ff007a" />
+            <span><AsciiGlitchText text={`${streakCount}D`} /></span>
           </div>
         )}
 
-        {/* New Task button (Desktop only, mobile has FAB in bottom dock) */}
+        {/* ── LIGHT / DARK MODE TOGGLE BUTTON (Visible on both Desktop & Mobile!) ── */}
+        <motion.button
+          whileTap={{ scale: 0.88, rotate: 20 }}
+          whileHover={{ scale: 1.08 }}
+          onClick={toggleTheme}
+          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="comic-btn comic-btn-yellow"
+          style={{
+            padding: isDesktop ? '6px 8px' : '5px 7px',
+            borderRadius: '8px',
+            flexShrink: 0,
+          }}
+        >
+          {darkMode ? <Sun size={15} color="#000000" /> : <Moon size={15} color="#000000" />}
+        </motion.button>
+
+        {/* New Task button (Desktop only, mobile has central FAB in bottom dock) */}
         {isDesktop && (
           <motion.button
             whileTap={{ scale: 0.92 }}
             whileHover={{ scale: 1.05 }}
             onClick={onOpenQuickAdd}
             className="comic-btn comic-btn-pink"
-            style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '10px' }}
+            style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '8px' }}
           >
-            <Plus size={15} strokeWidth={3} />
+            <Plus size={14} strokeWidth={3} />
             <span>NEW TASK</span>
           </motion.button>
         )}
@@ -297,12 +314,12 @@ export default function Header({
               onClick={() => setShowNotifications(!showNotifications)}
               aria-label="Notifications"
               className="comic-btn comic-btn-yellow"
-              style={{ padding: '7px', borderRadius: '10px' }}
+              style={{ padding: '6px', borderRadius: '8px' }}
             >
-              <Bell size={16} />
+              <Bell size={15} />
               <span style={{
                 position: 'absolute', top: '-3px', right: '-3px',
-                width: '9px', height: '9px', borderRadius: '50%',
+                width: '8px', height: '8px', borderRadius: '50%',
                 background: '#ff007a', border: '2px solid #000',
               }} />
             </button>
@@ -317,41 +334,41 @@ export default function Header({
                   transition={{ duration: 0.12 }}
                   style={{
                     position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-                    width: '290px', borderRadius: '14px', padding: '14px',
+                    width: '280px', borderRadius: '14px', padding: '12px',
                     background: 'var(--bg-card)',
                     border: '3px solid #000000',
                     boxShadow: '5px 5px 0px #000000',
                     zIndex: 100,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', borderBottom: '2px solid #000', paddingBottom: '6px' }}>
-                    <span style={{ fontWeight: 900, fontSize: '12px', textTransform: 'uppercase' }}>MISSIONS LOG</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', borderBottom: '2px solid #000', paddingBottom: '5px' }}>
+                    <span style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase' }}>MISSIONS LOG</span>
                     <span className="comic-badge" style={{ background: '#ff007a', color: '#fff', fontSize: '9px' }}>2 ACTIVE</span>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <div style={{
                       display: 'flex', alignItems: 'flex-start', gap: '8px',
-                      padding: '8px 10px', borderRadius: '10px',
+                      padding: '8px', borderRadius: '8px',
                       background: '#ffe600', color: '#000',
                       border: '2px solid #000', boxShadow: '2px 2px 0px #000',
                     }}>
-                      <Zap size={15} color="#000" fill="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
+                      <Zap size={14} color="#000" fill="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
                       <div>
-                        <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '2px' }}>Multiverse Sync Active</p>
-                        <p style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.3 }}>Cloud PostgreSQL database is online.</p>
+                        <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '1px' }}>Multiverse Sync Active</p>
+                        <p style={{ fontSize: '9.5px', fontWeight: 700, lineHeight: 1.3 }}>Cloud PostgreSQL database is online.</p>
                       </div>
                     </div>
                     <div style={{
                       display: 'flex', alignItems: 'flex-start', gap: '8px',
-                      padding: '8px 10px', borderRadius: '10px',
+                      padding: '8px', borderRadius: '8px',
                       background: '#00ff66', color: '#000',
                       border: '2px solid #000', boxShadow: '2px 2px 0px #000',
                     }}>
-                      <CheckCircle2 size={15} color="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
+                      <CheckCircle2 size={14} color="#000" style={{ marginTop: '1px', flexShrink: 0 }} />
                       <div>
-                        <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '2px' }}>Streak Protected!</p>
-                        <p style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.3 }}>{streakCount} Day focus streak maintained.</p>
+                        <p style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', marginBottom: '1px' }}>Streak Protected!</p>
+                        <p style={{ fontSize: '9.5px', fontWeight: 700, lineHeight: 1.3 }}>{streakCount} Day focus streak maintained.</p>
                       </div>
                     </div>
                   </div>
@@ -368,23 +385,23 @@ export default function Header({
             whileHover={{ scale: 1.04 }}
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="comic-btn comic-btn-cyan spider-hover-glitch"
-            style={{ padding: '4px 8px 4px 5px', borderRadius: '10px', gap: '6px' }}
+            style={{ padding: '3px 7px 3px 4px', borderRadius: '8px', gap: '5px', flexShrink: 0 }}
           >
             <div style={{
-              width: '26px', height: '26px', borderRadius: '7px', flexShrink: 0,
+              width: '24px', height: '24px', borderRadius: '6px', flexShrink: 0,
               background: '#000000', color: '#ffffff',
               border: '1px solid #000',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 900, fontSize: '12px', textTransform: 'uppercase',
+              fontWeight: 900, fontSize: '11px', textTransform: 'uppercase',
             }}>
-              {username ? username.charAt(0) : <UserIcon size={13} />}
+              {username ? username.charAt(0) : <UserIcon size={12} />}
             </div>
             {isDesktop && (
-              <span style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase' }}>
+              <span style={{ fontWeight: 900, fontSize: '10.5px', textTransform: 'uppercase' }}>
                 {username || 'HERO'}
               </span>
             )}
-            <ChevronDown size={13} strokeWidth={3} />
+            <ChevronDown size={12} strokeWidth={3} />
           </motion.button>
 
           {/* User Dossier & Actions Dropdown */}
@@ -396,59 +413,49 @@ export default function Header({
                 exit={{ opacity: 0, y: 6, scale: 0.95 }}
                 transition={{ duration: 0.12 }}
                 style={{
-                  position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-                  width: '260px', borderRadius: '16px', padding: '14px',
+                  position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                  width: '250px', borderRadius: '14px', padding: '12px',
                   background: 'var(--bg-card)',
                   border: '3px solid #000000',
-                  boxShadow: '6px 6px 0px #000000',
+                  boxShadow: '5px 5px 0px #000000',
                   zIndex: 100,
                   color: 'var(--text-primary)',
                 }}
               >
                 {/* Hero Header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingBottom: '10px', borderBottom: '2px dashed var(--border-color)', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingBottom: '8px', borderBottom: '2px dashed var(--border-color)', marginBottom: '8px' }}>
                   <div style={{
-                    width: '38px', height: '38px', borderRadius: '10px',
+                    width: '34px', height: '34px', borderRadius: '8px',
                     background: '#ffe600', color: '#000', border: '2px solid #000',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 900, fontSize: '16px', textTransform: 'uppercase',
+                    fontWeight: 900, fontSize: '15px', textTransform: 'uppercase',
                     boxShadow: '2px 2px 0px #000',
                   }}>
                     {username ? username.charAt(0) : 'H'}
                   </div>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontWeight: 900, fontSize: '12px', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       @{username || 'hero'}
                     </div>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontSize: '9.5px', fontWeight: 700, color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {userEmail}
                     </div>
                   </div>
                 </div>
 
                 {/* Mission Progress Mini Bar */}
-                <div style={{ padding: '8px', background: 'var(--bg-input)', borderRadius: '10px', border: '1px solid #000', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', fontWeight: 900, marginBottom: '4px' }}>
+                <div style={{ padding: '7px', background: 'var(--bg-input)', borderRadius: '8px', border: '1px solid #000', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9.5px', fontWeight: 900, marginBottom: '3px' }}>
                     <span>COMPLETION RATE</span>
                     <span style={{ color: '#00ff66' }}>{completionPct}%</span>
                   </div>
-                  <div style={{ height: '7px', width: '100%', background: '#000000', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ height: '6px', width: '100%', background: '#000000', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${completionPct}%`, background: '#00ff66', transition: 'width 0.3s ease' }} />
                   </div>
                 </div>
 
                 {/* Menu Items */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {/* Theme Toggle */}
-                  <button
-                    onClick={toggleTheme}
-                    className="comic-btn comic-btn-yellow"
-                    style={{ justifyContent: 'flex-start', padding: '7px 10px', fontSize: '11px', width: '100%', borderRadius: '8px' }}
-                  >
-                    {darkMode ? <Sun size={14} /> : <Moon size={14} />}
-                    <span>{darkMode ? 'SWITCH TO LIGHT MODE' : 'SWITCH TO DARK MODE'}</span>
-                  </button>
-
                   {/* Profile & Dossier */}
                   <button
                     onClick={() => {
@@ -456,9 +463,9 @@ export default function Header({
                       navigate('/profile');
                     }}
                     className="comic-btn comic-btn-cyan"
-                    style={{ justifyContent: 'flex-start', padding: '7px 10px', fontSize: '11px', width: '100%', borderRadius: '8px' }}
+                    style={{ justifyContent: 'flex-start', padding: '6px 8px', fontSize: '10.5px', width: '100%', borderRadius: '6px' }}
                   >
-                    <Settings size={14} />
+                    <Settings size={13} />
                     <span>HERO PROFILE & DOSSIER</span>
                   </button>
 
@@ -470,9 +477,9 @@ export default function Header({
                         onExport();
                       }}
                       className="comic-btn comic-btn-green"
-                      style={{ justifyContent: 'flex-start', padding: '7px 10px', fontSize: '11px', width: '100%', borderRadius: '8px' }}
+                      style={{ justifyContent: 'flex-start', padding: '6px 8px', fontSize: '10.5px', width: '100%', borderRadius: '6px' }}
                     >
-                      <FileDown size={14} />
+                      <FileDown size={13} />
                       <span>EXPORT COMIC REPORT (PDF)</span>
                     </button>
                   )}
@@ -485,9 +492,9 @@ export default function Header({
                         onOpenInstallModal();
                       }}
                       className="comic-btn comic-btn-white"
-                      style={{ justifyContent: 'flex-start', padding: '7px 10px', fontSize: '11px', width: '100%', borderRadius: '8px' }}
+                      style={{ justifyContent: 'flex-start', padding: '6px 8px', fontSize: '10.5px', width: '100%', borderRadius: '6px' }}
                     >
-                      <Download size={14} />
+                      <Download size={13} />
                       <span>INSTALL PWA APP</span>
                     </button>
                   )}
@@ -500,9 +507,9 @@ export default function Header({
                         onLogout();
                       }}
                       className="comic-btn comic-btn-pink"
-                      style={{ justifyContent: 'flex-start', padding: '7px 10px', fontSize: '11px', width: '100%', borderRadius: '8px', marginTop: '4px' }}
+                      style={{ justifyContent: 'flex-start', padding: '6px 8px', fontSize: '10.5px', width: '100%', borderRadius: '6px', marginTop: '2px' }}
                     >
-                      <LogOut size={14} />
+                      <LogOut size={13} />
                       <span>LOGOUT / EXIT</span>
                     </button>
                   )}

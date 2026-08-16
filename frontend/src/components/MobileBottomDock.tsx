@@ -44,29 +44,63 @@ export default function MobileBottomDock({
   onOpenQuickAdd,
 }: MobileBottomDockProps) {
   const dockRef = useRef<HTMLDivElement | null>(null);
+  const tabRefs = useRef<Record<string, HTMLElement | null>>({});
   const [hoveredView, setHoveredView] = useState<ViewMode | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Drag-to-select gesture handler for tabs track
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dockRef.current || !isDragging) return;
-    const rect = dockRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percentage = Math.max(0, Math.min(1, x / rect.width));
-    const targetIndex = Math.min(allItems.length - 1, Math.floor(percentage * allItems.length));
-    const targetItem = allItems[targetIndex];
-    if (targetItem && targetItem.id !== hoveredView) {
-      setHoveredView(targetItem.id);
-      onViewChange(targetItem.id);
+  // Determine closest tab to touch X coordinate
+  const detectTabAtX = (clientX: number) => {
+    let closestId: ViewMode | null = null;
+    let minDistance = Infinity;
+
+    allItems.forEach((item) => {
+      const el = tabRefs.current[item.id];
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        // If clientX is strictly inside tab bounding box
+        if (clientX >= rect.left && clientX <= rect.right) {
+          closestId = item.id;
+          minDistance = 0;
+        } else {
+          const tabCenter = rect.left + rect.width / 2;
+          const dist = Math.abs(clientX - tabCenter);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestId = item.id;
+          }
+        }
+      }
+    });
+
+    return closestId;
+  };
+
+  // Touch Move / Drag Gesture listener
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    const touch = e.touches[0];
+    if (touch) {
+      const targetView = detectTabAtX(touch.clientX);
+      if (targetView) {
+        setHoveredView(targetView);
+        onViewChange(targetView);
+      }
     }
   };
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    handlePointerMove(e);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    if (touch) {
+      const targetView = detectTabAtX(touch.clientX);
+      if (targetView && targetView !== currentView) {
+        setHoveredView(targetView);
+        onViewChange(targetView);
+      }
+    }
   };
 
-  const handlePointerUp = () => {
+  const handleTouchEnd = () => {
     setIsDragging(false);
     setHoveredView(null);
   };
@@ -79,6 +113,7 @@ export default function MobileBottomDock({
     return (
       <motion.button
         key={item.id}
+        ref={(el) => { tabRefs.current[item.id] = el; }}
         onClick={(e) => {
           e.stopPropagation();
           onViewChange(item.id);
@@ -165,13 +200,13 @@ export default function MobileBottomDock({
         }}
       />
 
-      {/* Main Solid Dock Bar */}
+      {/* Main Solid Dock Bar with Drag-to-Select gesture */}
       <div
         ref={dockRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         style={{
           width: '100%',
           background: 'var(--bg-card)',
@@ -181,52 +216,77 @@ export default function MobileBottomDock({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '2px',
+          gap: '4px',
           boxSizing: 'border-box',
+          position: 'relative',
         }}
       >
-        {/* Left 2 Tabs: Tasks, Lanes */}
-        <div style={{ display: 'flex', alignItems: 'center', flex: 2, gap: '2px', minWidth: 0 }}>
+        {/* Left Container: Exactly 50% flex */}
+        <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: '2px', minWidth: 0 }}>
           {leftItems.map(renderTab)}
         </div>
 
-        {/* ── CENTER HERO POP FAB (+) BUTTON ── */}
+        {/* ── CENTER HERO POP FAB (+) BUTTON (LIFTED HIGHER & DEAD CENTER) ── */}
         <div
-          onPointerDown={(e) => e.stopPropagation()}
           onTouchStart={(e) => e.stopPropagation()}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', flexShrink: 0, position: 'relative' }}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 4px',
+            flexShrink: 0,
+            position: 'relative',
+            zIndex: 30,
+          }}
         >
+          {/* Subtle Outer Halo Ring */}
+          <div style={{
+            position: 'absolute',
+            top: '-34px',
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'var(--bg-card)',
+            border: '2.5px solid #000000',
+            zIndex: 1,
+            pointerEvents: 'none',
+          }} />
+
           <motion.button
             onClick={(e) => {
               e.stopPropagation();
               onOpenQuickAdd();
             }}
-            whileTap={{ scale: 0.85, rotate: 90 }}
+            whileTap={{ scale: 0.84, rotate: 90 }}
             whileHover={{ scale: 1.12, rotate: 15 }}
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '14px',
+              width: '54px',
+              height: '54px',
+              borderRadius: '50%',
               background: 'linear-gradient(135deg, #ffe600 0%, #ff007a 100%)',
               color: '#000000',
-              border: '3px solid #000000',
-              boxShadow: '3px 3px 0px #000000, 0 4px 14px rgba(255, 0, 122, 0.5)',
+              border: '3.5px solid #000000',
+              boxShadow: '0 4px 0px #000000, 0 6px 18px rgba(255, 0, 122, 0.65)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              marginTop: '-18px',
+              marginTop: '-30px',
+              position: 'relative',
               zIndex: 10,
               transform: 'rotate(-2deg)',
             }}
             title="Create New Mission (Task)"
           >
-            <Plus size={26} strokeWidth={3.5} color="#ffffff" />
+            <Plus size={28} strokeWidth={3.5} color="#ffffff" />
           </motion.button>
         </div>
 
-        {/* Right 3 Tabs: Calendar, Timer, Stats */}
-        <div style={{ display: 'flex', alignItems: 'center', flex: 3, gap: '2px', minWidth: 0 }}>
+        {/* Right Container: Exactly 50% flex */}
+        <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: '2px', minWidth: 0 }}>
           {rightItems.map(renderTab)}
         </div>
       </div>

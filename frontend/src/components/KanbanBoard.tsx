@@ -152,19 +152,22 @@ export default function KanbanBoard({
             <div style={{ marginBottom: '8px', flexShrink: 0 }}>
               <button
                 onClick={() => onQuickAddInLane(col.id)}
-                className="comic-btn comic-btn-white"
+                className="comic-btn comic-btn-yellow"
                 style={{
                   width: '100%',
-                  padding: '5px',
-                  fontSize: '10px',
+                  padding: '6px 8px',
+                  fontSize: '11px',
+                  fontWeight: 900,
                   borderRadius: '8px',
-                  borderStyle: 'dashed',
+                  border: '2px solid #000000',
+                  boxShadow: '2px 2px 0px #000000',
                   justifyContent: 'center',
-                  background: 'var(--bg-card-subtle)',
+                  background: '#ffe600',
+                  color: '#000000',
                 }}
               >
-                <Plus size={13} />
-                <span>ADD CARD</span>
+                <Plus size={14} strokeWidth={3} />
+                <span>ADD MISSION CARD</span>
               </button>
             </div>
 

@@ -19,27 +19,28 @@ app = Flask(__name__)
 
 CORS(app, resources={
     r"/api/*": {
-        "origins": [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:4173",
-            "http://127.0.0.1:4173",
-        ],
+        "origins": "*",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True
     }
-}, supports_credentials=True, origins=r"http://.*:5173")
-
+}, supports_credentials=True)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config.from_pyfile('config.py')  # Move configs to separate file
 
-# Config
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'instance', 'app.db')}"
+# Database URI (supports PostgreSQL on Railway and fallback SQLite for local dev)
+db_url = os.getenv('DATABASE_URL')
+if db_url:
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'instance', 'app.db')}"
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'taskify-pro-super-secret-key-2026')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'taskify-pro-jwt-secret-key-2026')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)  # Token expiration
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)  # Refresh token expiration
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
@@ -102,4 +103,5 @@ if __name__ == '__main__':
         storage_uri="memory://",
         enabled=not app.debug
     )
-    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

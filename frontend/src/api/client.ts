@@ -2,6 +2,9 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     // If accessing via IP or domain, use the current host's IP on port 5000

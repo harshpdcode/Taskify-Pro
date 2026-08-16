@@ -93,6 +93,22 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return jsonify(error="Internal server error"), 500
+
+@app.route('/api/seed', methods=['GET', 'POST'])
+def auto_seed():
+    try:
+        from seed import seed_database
+        seed_database()
+        return jsonify({
+            "status": "success",
+            "message": "Database seeded successfully with test users and tasks!",
+            "test_accounts": [
+                {"username": "demo", "email": "demo@taskify.pro", "password": "Password123!"},
+                {"username": "harsh", "email": "harsh@taskify.pro", "password": "Password123!"}
+            ]
+        }), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 limiter.init_app(app)
 limiter.enabled = not app.debug
 

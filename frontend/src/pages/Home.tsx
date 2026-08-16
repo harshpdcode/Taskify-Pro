@@ -220,19 +220,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen halftone-bg" style={{ backgroundColor: 'var(--bg-main)', color: 'var(--text-primary)', position: 'relative', overflowX: 'hidden', width: '100%' }}>
-      {/* Top Scroll Progress Indicator */}
+      {/* Top Scroll Progress Indicator — sits directly below fixed header */}
       <motion.div
         style={{
           scaleX,
           position: 'fixed',
-          top: 0,
+          top: isDesktop ? '50px' : '44px',
           left: 0,
           right: 0,
-          height: '4px',
+          height: '3px',
           background: 'linear-gradient(90deg, #ffe600, #ff007a, #00f0ff, #00ff66)',
           transformOrigin: '0%',
-          zIndex: 100,
-          borderBottom: '1px solid #000',
+          zIndex: 101,
         }}
       />
 
@@ -264,7 +263,7 @@ export default function Home() {
         <main
           style={{
             flex: 1,
-            padding: isDesktop ? '20px 28px 40px' : '10px 12px 115px',
+            padding: isDesktop ? '68px 24px 40px' : '56px 10px 115px',
             maxWidth: '1440px',
             width: '100%',
             margin: '0 auto',

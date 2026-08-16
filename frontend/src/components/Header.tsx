@@ -104,18 +104,20 @@ export default function Header({
   return (
     <header
       style={{
-        position: 'sticky',
+        position: 'fixed',
         top: 0,
+        left: 0,
+        right: 0,
         zIndex: 100,
         width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: isDesktop ? '10px' : '6px',
-        padding: isDesktop ? '8px 16px' : '6px 10px',
+        padding: isDesktop ? '8px 18px' : '6px 10px',
         background: 'var(--bg-header)',
         borderBottom: 'var(--border-thick)',
-        boxShadow: '0 3px 0px #000000',
+        boxShadow: '0 4px 0px #000000',
         boxSizing: 'border-box',
         transition: 'background-color 0.2s ease, border-color 0.2s ease',
       }}

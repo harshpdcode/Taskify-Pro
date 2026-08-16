@@ -2,6 +2,7 @@
 import json
 from datetime import datetime, timedelta, timezone
 from werkzeug.security import generate_password_hash
+from sqlalchemy import text
 from app import app
 from extensions import db
 from models import User, Task
@@ -10,6 +11,15 @@ def seed_database():
     with app.app_context():
         print("🌱 Initializing database tables...")
         db.create_all()
+
+        # Migrate column lengths for PostgreSQL
+        try:
+            db.session.execute(text('ALTER TABLE "user" ALTER COLUMN password TYPE VARCHAR(512);'))
+            db.session.execute(text('ALTER TABLE "user" ALTER COLUMN reset_token TYPE VARCHAR(512);'))
+            db.session.execute(text('ALTER TABLE "user" ALTER COLUMN email TYPE VARCHAR(255);'))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
         # ── Test Users ──
         test_users_data = [

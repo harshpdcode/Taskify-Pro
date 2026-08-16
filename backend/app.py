@@ -75,11 +75,19 @@ app.register_blueprint(tasks_bp, url_prefix='/api')
 
 init_app(app)
 
-# Create tables
+# Create tables & migrate column lengths
 with app.app_context():
+    from sqlalchemy import text
     if not os.path.exists(os.path.join(basedir, 'instance')):
         os.makedirs(os.path.join(basedir, 'instance'))
     db.create_all()
+    try:
+        db.session.execute(text('ALTER TABLE "user" ALTER COLUMN password TYPE VARCHAR(512);'))
+        db.session.execute(text('ALTER TABLE "user" ALTER COLUMN reset_token TYPE VARCHAR(512);'))
+        db.session.execute(text('ALTER TABLE "user" ALTER COLUMN email TYPE VARCHAR(255);'))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 @app.errorhandler(422)
 def handle_unprocessable_entity(err):
     return jsonify({

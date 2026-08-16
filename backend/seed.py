@@ -152,6 +152,27 @@ def seed_database():
                         ]
                     }
                 ]
+            },
+            {
+                "username": "testuser",
+                "email": "testuser@taskify.pro",
+                "password": generate_password_hash("Password123!"),
+                "tasks": [
+                    {
+                        "title": "🕷️ Spider-Verse Portal Calibration",
+                        "description": "Initialize multiverse focus environment and test rapid task creation.",
+                        "priority": 3,
+                        "status": "in_progress",
+                        "category": "work",
+                        "estimated_minutes": 25,
+                        "due_date": datetime.now(timezone.utc) + timedelta(days=2),
+                        "completed": False,
+                        "subtasks": [
+                            {"id": "1", "text": "Test dark/light universe switch", "completed": True},
+                            {"id": "2", "text": "Verify task drag-and-drop", "completed": True}
+                        ]
+                    }
+                ]
             }
         ]
 

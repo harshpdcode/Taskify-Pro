@@ -46,7 +46,7 @@ export default function Login() {
   };
 
   const fillDemo = () => {
-    setUsername('testuser');
+    setUsername('demo');
     setPassword('Password123!');
     toast.info('Demo credentials filled!');
   };
@@ -231,7 +231,7 @@ export default function Login() {
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontWeight: 900, fontSize: '11px', textTransform: 'uppercase' }}>DEMO CREDENTIALS</div>
                 <div style={{ fontSize: '10px', fontWeight: 700, opacity: 0.85, fontFamily: 'monospace' }}>
-                  testuser · Password123!
+                  demo · Password123!
                 </div>
               </div>
             </div>

@@ -5,7 +5,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../context/ThemeContext';
 import { TaskService } from '../api/task';
 import type { Task, ViewMode, TaskStatus, Subtask } from '../types/task';
-import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import TaskCard from '../components/TaskCard';
 import TaskModal from '../components/TaskModal';
@@ -56,14 +55,13 @@ export default function Home() {
   }, []);
 
   // Modals & Drawers
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [focusTask, setFocusTask] = useState<Task | null>(null);
 
   // Theme with Spider-Verse Multiverse Glitch
-  const { darkMode, toggleTheme } = useTheme();
+  const { toggleTheme } = useTheme();
 
   // Fetch Tasks with React Query
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
@@ -238,45 +236,36 @@ export default function Home() {
         }}
       />
 
-      {/* Responsive Sidebar */}
-      <Sidebar
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        darkMode={darkMode}
-        onToggleTheme={toggleTheme}
-        onLogout={logout}
-        totalTasks={totalTasks}
-        completedTasks={completedTasks}
-        onOpenInstallModal={() => setShowInstallModal(true)}
-      />
-
-      {/* Main Content Area — offset by sidebar width on desktop */}
+      {/* Main Content Area — Full Screen Width */}
       <div
         className="flex flex-col min-h-screen relative z-10"
-        style={{ marginLeft: isDesktop ? '272px' : 0, transition: 'margin-left 0.25s ease' }}
+        style={{ marginLeft: 0 }}
         id="main-content-area"
       >
-        {/* Sticky Header */}
+        {/* Sticky Header with Integrated Controls & View Switcher */}
         <Header
-          onOpenSidebar={() => setIsSidebarOpen(true)}
+          currentView={currentView}
+          onViewChange={setCurrentView}
           onOpenQuickAdd={handleOpenNewTask}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           username={user?.username || ''}
+          userEmail={user?.email || 'hero@taskify.pro'}
           streakCount={4}
+          completedTasksCount={completedTasks}
+          totalTasksCount={totalTasks}
+          onExport={handleExportComicPDF}
+          onLogout={logout}
+          onOpenInstallModal={() => setShowInstallModal(true)}
         />
 
         {/* Dashboard Main Body */}
         <main
           style={{
             flex: 1,
-            padding: isDesktop ? '24px 24px 40px' : '12px 10px 96px',
-            maxWidth: '1280px',
+            padding: isDesktop ? '20px 28px 40px' : '10px 10px 96px',
+            maxWidth: '1440px',
             width: '100%',
             margin: '0 auto',
             boxSizing: 'border-box',
@@ -376,6 +365,77 @@ export default function Home() {
                 ))}
               </div>
             </motion.div>
+          )}
+
+          {/* ── Multiverse Category Filter Ribbon ── */}
+          {(currentView === 'list' || currentView === 'kanban') && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                overflowX: 'auto',
+                scrollbarWidth: 'none',
+                paddingBottom: '4px',
+                marginBottom: isDesktop ? '14px' : '10px',
+              }}
+            >
+              {[
+                { id: 'all', label: 'ALL MISSIONS', icon: '🌟', color: '#ffe600' },
+                { id: 'work', label: 'WORK & OPS', icon: '💼', color: '#00f0ff' },
+                { id: 'personal', label: 'PERSONAL', icon: '🏠', color: '#ff007a' },
+                { id: 'learning', label: 'LEARNING', icon: '📚', color: '#00ff66' },
+                { id: 'finance', label: 'FINANCE', icon: '💰', color: '#ffe600' },
+                { id: 'health', label: 'HEALTH', icon: '⚡', color: '#00f0ff' },
+              ].map((cat) => {
+                const isSelected = selectedCategory === cat.id;
+                const catCount = cat.id === 'all' 
+                  ? tasks.length 
+                  : tasks.filter(t => t.category === cat.id).length;
+                return (
+                  <motion.button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    whileTap={{ scale: 0.94 }}
+                    whileHover={{ scale: 1.03 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: isDesktop ? '7px 14px' : '6px 11px',
+                      borderRadius: '12px',
+                      fontSize: isDesktop ? '11px' : '10px',
+                      fontWeight: 900,
+                      letterSpacing: '0.4px',
+                      border: isSelected ? '2px solid #000000' : '2px solid transparent',
+                      background: isSelected ? cat.color : 'var(--bg-card)',
+                      color: isSelected ? '#000000' : 'var(--text-secondary)',
+                      boxShadow: isSelected ? '3px 3px 0px #000000' : '1px 1px 0px rgba(0,0,0,0.15)',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                    <span
+                      style={{
+                        padding: '1px 5px',
+                        borderRadius: '5px',
+                        background: isSelected ? '#000000' : 'var(--bg-input)',
+                        color: isSelected ? '#ffffff' : 'var(--text-primary)',
+                        fontSize: '9px',
+                        fontWeight: 900,
+                        fontFamily: 'monospace',
+                      }}
+                    >
+                      {catCount}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
           )}
 
           {/* ── View Content ── */}

@@ -48,15 +48,54 @@ export default function Landing() {
 
     // Calculate proximity intensity
     const maxDist = Math.max(380, typeof window !== 'undefined' ? window.innerWidth * 0.7 : 400);
-    const intensity = Math.max(0.25, Math.min(1.25, 1.25 - distance / maxDist));
+    const intensity = Math.max(0.35, Math.min(1.3, 1.3 - distance / maxDist));
 
     setMouseOffset({
-      x: (distX / (rect.width / 2)) * 28,
-      y: (distY / (rect.height / 2)) * 24,
+      x: (distX / (rect.width / 2)) * 30,
+      y: (distY / (rect.height / 2)) * 26,
       intensity,
     });
     setIsHoveringArtwork(true);
   };
+
+  // Native non-passive touch listeners to completely prevent browser page scrolling
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+      const touch = e.touches[0];
+      if (touch) {
+        updateInteractiveOffset(touch.clientX, touch.clientY);
+        setIsHoveringArtwork(true);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+      const touch = e.touches[0];
+      if (touch) {
+        updateInteractiveOffset(touch.clientX, touch.clientY);
+        setIsHoveringArtwork(true);
+      }
+    };
+
+    const onTouchEnd = () => {
+      // Keep animation running continuously until user taps outside!
+      setIsHoveringArtwork(true);
+    };
+
+    stage.addEventListener('touchstart', onTouchStart, { passive: false });
+    stage.addEventListener('touchmove', onTouchMove, { passive: false });
+    stage.addEventListener('touchend', onTouchEnd, { passive: true });
+
+    return () => {
+      stage.removeEventListener('touchstart', onTouchStart);
+      stage.removeEventListener('touchmove', onTouchMove);
+      stage.removeEventListener('touchend', onTouchEnd);
+    };
+  }, []);
 
   // Mouse event handlers (PC / Laptop View)
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -67,26 +106,6 @@ export default function Landing() {
   const handleMouseLeave = () => {
     setIsHoveringArtwork(false);
     setMouseOffset({ x: 0, y: 0, intensity: 0 });
-  };
-
-  // Touch event handlers (Mobile Phone View — Follows finger and persists until clicking outside)
-  const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
-    const touch = e.touches[0];
-    if (touch) {
-      updateInteractiveOffset(touch.clientX, touch.clientY);
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLElement>) => {
-    const touch = e.touches[0];
-    if (touch) {
-      updateInteractiveOffset(touch.clientX, touch.clientY);
-    }
-  };
-
-  // On mobile touch end, keep the animation and tilt angle active!
-  const handleTouchEnd = () => {
-    setIsHoveringArtwork(true);
   };
 
   // Reset animation only when user clicks/taps outside the interactive stage
@@ -108,6 +127,7 @@ export default function Landing() {
           background-color: var(--bg-main);
           color: var(--text-primary);
           position: relative;
+          overscroll-behavior: none;
         }
 
         /* ── TOP COMIC NAVBAR ── */
@@ -120,7 +140,7 @@ export default function Landing() {
           padding: 0 max(12px, 3vw);
           display: flex;
           align-items: center;
-          justifyContent: space-between;
+          justify-content: space-between;
           background: var(--bg-sidebar);
           border-bottom: 3px solid #000000;
           box-shadow: 0 3px 0px #000000;
@@ -234,9 +254,11 @@ export default function Landing() {
           z-index: 10;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justifyContent: center;
           cursor: grab;
           touch-action: none;
+          user-select: none;
+          -webkit-user-select: none;
         }
 
         .spider-multiverse-stage:active {
@@ -413,9 +435,6 @@ export default function Landing() {
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
             style={{
               position: 'absolute',
               inset: 0,
@@ -441,9 +460,6 @@ export default function Landing() {
             <div
               ref={stationRef}
               className="spider-multiverse-stage"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
               onClick={() => {
                 setIsHoveringArtwork(true);
               }}

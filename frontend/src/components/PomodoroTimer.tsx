@@ -36,6 +36,14 @@ export default function PomodoroTimer({
   onSelectTask,
   onCompleteTask,
 }: PomodoroTimerProps) {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [mode, setMode] = useState<TimerMode>('work');
   const [timeLeft, setTimeLeft] = useState<number>(25 * 60);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -78,19 +86,14 @@ export default function PomodoroTimer({
       triggerMilestoneConfetti();
 
       if (mode === 'work') {
-        const nextCount = sessionsCompleted + 1;
-        setSessionsCompleted(nextCount);
-        if (nextCount % 4 === 0) {
-          switchMode('long_break');
-        } else {
-          switchMode('short_break');
+        setSessionsCompleted((prev) => prev + 1);
+        if (activeTask) {
+          onCompleteTask(activeTask);
         }
-      } else {
-        switchMode('work');
       }
     }
     return () => clearInterval(timer);
-  }, [isRunning, timeLeft, mode, sessionsCompleted]);
+  }, [isRunning, timeLeft, mode, activeTask]);
 
   const switchMode = (newMode: TimerMode) => {
     setMode(newMode);
@@ -107,13 +110,21 @@ export default function PomodoroTimer({
     setTimeLeft(timerPresets[mode].minutes * 60);
   };
 
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  const skipTimer = () => {
+    setIsRunning(false);
+    if (mode === 'work') {
+      switchMode('short_break');
+    } else {
+      switchMode('work');
+    }
   };
 
-  // SVG Circular ring calculations
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
   const radius = 100;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
@@ -123,33 +134,39 @@ export default function PomodoroTimer({
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-      gap: '24px',
-      alignItems: 'flex-start',
+      gridTemplateColumns: isDesktop ? '1.3fr 1fr' : '1fr',
+      gap: isDesktop ? '16px' : '20px',
+      alignItems: 'stretch',
+      height: isDesktop ? 'calc(100vh - 120px)' : 'auto',
+      maxHeight: isDesktop ? 'calc(100vh - 120px)' : 'none',
+      width: '100%',
+      boxSizing: 'border-box',
     }}>
       {/* Timer Display Card */}
       <div style={{
-        gridColumn: 'span 2',
         borderRadius: '16px',
-        padding: '36px 24px',
+        padding: isDesktop ? '18px 20px' : '24px 16px',
         background: 'var(--bg-card)',
         border: '3px solid #000000',
-        boxShadow: '8px 8px 0px #000000',
+        boxShadow: '5px 5px 0px #000000',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         position: 'relative',
+        height: '100%',
+        boxSizing: 'border-box',
       }}>
         {/* Mode Switcher Tabs */}
         <div style={{
           display: 'flex',
-          gap: '8px',
-          padding: '6px',
-          borderRadius: '12px',
+          gap: '6px',
+          padding: '4px',
+          borderRadius: '10px',
           background: 'var(--bg-card-subtle)',
           border: '2px solid #000000',
-          marginBottom: '30px',
+          marginBottom: '12px',
+          flexShrink: 0,
         }}>
           {(['work', 'short_break', 'long_break'] as TimerMode[]).map((m) => {
             const isCurrent = mode === m;
@@ -159,8 +176,8 @@ export default function PomodoroTimer({
                 onClick={() => switchMode(m)}
                 className={`comic-btn ${isCurrent ? (m === 'work' ? 'comic-btn-yellow' : m === 'short_break' ? 'comic-btn-green' : 'comic-btn-pink') : 'comic-btn-white'}`}
                 style={{
-                  padding: '8px 16px',
-                  fontSize: '12px',
+                  padding: '6px 12px',
+                  fontSize: isDesktop ? '11px' : '10px',
                   boxShadow: isCurrent ? '2px 2px 0px #000' : 'none',
                 }}
               >
@@ -170,8 +187,8 @@ export default function PomodoroTimer({
           })}
         </div>
 
-        {/* Big Circular Animated Clock */}
-        <div style={{ position: 'relative', width: '260px', height: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* Circular Clock Display */}
+        <div style={{ position: 'relative', width: isDesktop ? '210px' : '190px', height: isDesktop ? '210px' : '190px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 240 240">
             <circle
               cx="120"
@@ -197,26 +214,26 @@ export default function PomodoroTimer({
 
           {/* Time text in center */}
           <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-            <span style={{ fontSize: '48px', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'monospace', letterSpacing: '-1px', lineHeight: 1 }}>
+            <span style={{ fontSize: isDesktop ? '40px' : '36px', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'monospace', letterSpacing: '-1px', lineHeight: 1 }}>
               {formatTime(timeLeft)}
             </span>
-            <div className="comic-badge comic-badge-rotate-left" style={{ background: timerPresets[mode].color, color: timerPresets[mode].textCol, marginTop: '8px', fontSize: '10px' }}>
+            <div className="comic-badge comic-badge-rotate-left" style={{ background: timerPresets[mode].color, color: timerPresets[mode].textCol, marginTop: '6px', fontSize: '9px' }}>
               {timerPresets[mode].label}
             </div>
             {activeTask && (
               <span style={{
-                marginTop: '8px',
-                fontSize: '11px',
+                marginTop: '6px',
+                fontSize: '10px',
                 fontWeight: 800,
                 color: '#000000',
-                maxWidth: '160px',
+                maxWidth: '140px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 background: '#ffe600',
                 border: '1px solid #000000',
-                padding: '2px 8px',
-                borderRadius: '6px',
+                padding: '1px 6px',
+                borderRadius: '5px',
               }}>
                 🎯 {activeTask.title}
               </span>
@@ -224,157 +241,104 @@ export default function PomodoroTimer({
           </div>
         </div>
 
-        {/* Control Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: '32px' }}>
+        {/* Action Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', flexShrink: 0 }}>
+          <button
+            onClick={toggleTimer}
+            className={`comic-btn ${isRunning ? 'comic-btn-pink' : 'comic-btn-yellow'}`}
+            style={{
+              padding: '10px 24px',
+              fontSize: '13px',
+              borderRadius: '12px',
+              boxShadow: '4px 4px 0px #000000',
+            }}
+          >
+            {isRunning ? <Pause size={18} /> : <Play size={18} fill="#000" />}
+            <span>{isRunning ? 'PAUSE' : 'START MISSION'}</span>
+          </button>
+
           <button
             onClick={resetTimer}
             title="Reset Timer"
             className="comic-btn comic-btn-white"
-            style={{ padding: '12px', borderRadius: '12px' }}
+            style={{ padding: '9px 10px', borderRadius: '10px' }}
           >
-            <RotateCcw size={18} />
+            <RotateCcw size={16} />
           </button>
 
           <button
-            onClick={toggleTimer}
-            className={`comic-btn ${isRunning ? 'comic-btn-pink' : 'comic-btn-yellow'}`}
-            style={{ padding: '14px 38px', fontSize: '16px', borderRadius: '14px' }}
+            onClick={skipTimer}
+            title="Skip to Next Cycle"
+            className="comic-btn comic-btn-cyan"
+            style={{ padding: '9px 10px', borderRadius: '10px' }}
           >
-            {isRunning ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
-            <span>{isRunning ? 'PAUSE' : 'START FOCUS'}</span>
+            <SkipForward size={16} />
           </button>
 
           <button
-            onClick={() => switchMode(mode === 'work' ? 'short_break' : 'work')}
-            title="Skip Session"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            title="Toggle Sound Effects"
             className="comic-btn comic-btn-white"
-            style={{ padding: '12px', borderRadius: '12px' }}
+            style={{ padding: '9px 10px', borderRadius: '10px' }}
           >
-            <SkipForward size={18} />
+            {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
         </div>
 
-        {/* Sessions Completed Badges */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '24px', fontSize: '12px', fontWeight: 800 }}>
-          <Flame size={18} color="#ff007a" fill="#ff007a" />
-          <span style={{ textTransform: 'uppercase' }}>COMPLETED SESSIONS:</span>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {Array.from({ length: Math.max(sessionsCompleted, 4) }).map((_, i) => (
-              <span
-                key={i}
-                style={{
-                  width: '12px',
-                  height: '12px',
-                  borderRadius: '3px',
-                  backgroundColor: i < sessionsCompleted ? '#ffe600' : 'var(--bg-card-subtle)',
-                  border: '1.5px solid #000000',
-                  boxShadow: i < sessionsCompleted ? '1px 1px 0px #000' : 'none',
-                }}
-              />
-            ))}
-          </div>
+        {/* Session counter */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginTop: '12px',
+          padding: '4px 12px',
+          borderRadius: '8px',
+          background: 'var(--bg-card-subtle)',
+          border: '1.5px solid #000000',
+          fontSize: '10.5px',
+          fontWeight: 900,
+          flexShrink: 0,
+        }}>
+          <Flame size={14} color="#ff007a" fill="#ff007a" />
+          <span>CYCLES COMPLETED:</span>
+          <span style={{ color: '#00ff66', fontFamily: 'monospace', fontSize: '12px' }}>{sessionsCompleted}</span>
         </div>
-
-        {/* Sound toggle */}
-        <button
-          onClick={() => setSoundEnabled(!soundEnabled)}
-          className="comic-btn comic-btn-white"
-          style={{
-            position: 'absolute',
-            bottom: '16px',
-            right: '16px',
-            padding: '8px',
-            borderRadius: '8px',
-            fontSize: '11px',
-          }}
-        >
-          {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-        </button>
       </div>
 
-      {/* Focus Target Task Drawer */}
+      {/* Target Mission Focus Selector Card */}
       <div style={{
         borderRadius: '16px',
-        padding: '20px',
+        padding: isDesktop ? '16px 18px' : '16px',
         background: 'var(--bg-card)',
         border: '3px solid #000000',
-        boxShadow: '6px 6px 0px #000000',
+        boxShadow: '5px 5px 0px #000000',
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '520px',
+        height: '100%',
+        maxHeight: isDesktop ? 'calc(100vh - 120px)' : 'none',
+        boxSizing: 'border-box',
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
-          paddingBottom: '14px',
-          marginBottom: '14px',
+          justifyContent: 'space-between',
+          paddingBottom: '8px',
+          marginBottom: '10px',
           borderBottom: '2px solid #000000',
+          flexShrink: 0,
         }}>
-          <Target size={18} />
-          <div>
-            <h3 style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' }}>FOCUS TARGET MISSION</h3>
-            <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>LOCK ONTO A TARGET FOR THIS ROUND</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Target size={17} color="#ff007a" />
+            <h3 style={{ fontSize: '13px', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-primary)' }}>
+              SELECT FOCUS MISSION
+            </h3>
           </div>
+          <span className="comic-badge" style={{ background: '#00ff66', color: '#000000', fontSize: '9px' }}>
+            {incompleteTasks.length} READY
+          </span>
         </div>
 
-        {/* Currently Active Task Banner */}
-        {activeTask ? (
-          <div style={{
-            padding: '14px',
-            borderRadius: '12px',
-            background: '#ffe600',
-            color: '#000000',
-            border: '2px solid #000000',
-            boxShadow: '3px 3px 0px #000000',
-            marginBottom: '16px',
-          }}>
-            <span className="comic-badge" style={{ background: '#ff007a', color: '#fff', fontSize: '9px', marginBottom: '4px' }}>
-              ACTIVE TARGET
-            </span>
-            <h4 style={{ fontSize: '14px', fontWeight: 900, marginTop: '4px', marginBottom: '10px' }}>{activeTask.title}</h4>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <button
-                onClick={() => onCompleteTask(activeTask)}
-                className="comic-btn comic-btn-green"
-                style={{ padding: '5px 10px', fontSize: '11px', borderRadius: '6px' }}
-              >
-                <CheckCircle2 size={13} />
-                <span>MISSION DONE</span>
-              </button>
-              <button
-                onClick={() => onSelectTask(null as any)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  color: '#000000',
-                  cursor: 'pointer',
-                  textDecoration: 'underline',
-                }}
-              >
-                CLEAR
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div style={{
-            padding: '12px',
-            borderRadius: '10px',
-            background: 'var(--bg-card-subtle)',
-            border: '2px dashed #000000',
-            textAlign: 'center',
-            fontSize: '11px',
-            fontWeight: 800,
-            marginBottom: '16px',
-            textTransform: 'uppercase',
-          }}>
-            SELECT A TARGET BELOW TO LOCK IN
-          </div>
-        )}
-
-        {/* Task List Selector */}
+        {/* Task selection list */}
         <div
           className="custom-scrollbar"
           style={{
@@ -383,45 +347,80 @@ export default function PomodoroTimer({
             gap: '8px',
             flex: 1,
             overflowY: 'auto',
-            maxHeight: 'calc(100vh - 360px)',
-            paddingRight: '2px',
+            minHeight: 0,
+            paddingRight: '3px',
           }}
         >
-          {incompleteTasks.map((t) => (
-            <div
-              key={t.id}
-              onClick={() => onSelectTask(t)}
-              style={{
-                padding: '10px 12px',
-                borderRadius: '10px',
-                border: activeTask?.id === t.id ? '2px solid #000000' : '2px solid #000000',
-                background: activeTask?.id === t.id ? '#ffe600' : '#ffffff',
-                color: '#000000',
-                boxShadow: activeTask?.id === t.id ? '3px 3px 0px #000000' : '1px 1px 0px #000000',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
-                <span
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '3px',
-                    flexShrink: 0,
-                    border: '1px solid #000',
-                    backgroundColor: t.priority === 4 ? '#ff007a' : t.priority === 3 ? '#ffe600' : t.priority === 2 ? '#00f0ff' : '#00ff66',
-                  }}
-                />
-                <span style={{ fontSize: '12px', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.title}</span>
-              </div>
-              <span style={{ fontSize: '10px', fontWeight: 900, fontFamily: 'monospace', flexShrink: 0, marginLeft: '8px' }}>
-                {t.estimated_minutes || 25}M
-              </span>
+          {incompleteTasks.length === 0 ? (
+            <div style={{
+              flex: 1,
+              minHeight: '120px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px dashed #000000',
+              borderRadius: '10px',
+              padding: '16px',
+              textAlign: 'center',
+              background: 'var(--bg-card-subtle)',
+              color: 'var(--text-primary)',
+            }}>
+              <CheckCircle2 size={24} color="#00ff66" style={{ marginBottom: '6px' }} />
+              <p style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase' }}>ALL MISSIONS CLEARED!</p>
             </div>
-          ))}
+          ) : (
+            incompleteTasks.map((t) => {
+              const isSelected = activeTask?.id === t.id;
+              return (
+                <div
+                  key={t.id}
+                  onClick={() => onSelectTask(t)}
+                  style={{
+                    padding: '8px 10px',
+                    borderRadius: '10px',
+                    border: isSelected ? '2.5px solid #000000' : '2px solid #000000',
+                    background: isSelected ? '#ffe600' : 'var(--bg-card-subtle)',
+                    color: isSelected ? '#000000' : 'var(--text-primary)',
+                    boxShadow: isSelected ? '3px 3px 0px #000000' : '1px 1px 0px #000000',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '8px',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {t.title}
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', marginTop: '2px' }}>
+                      <span className="comic-badge" style={{ fontSize: '8px', padding: '1px 4px', background: '#00f0ff', color: '#000000' }}>
+                        {t.category}
+                      </span>
+                      <span style={{ fontSize: '9px', fontWeight: 700, color: isSelected ? '#000000' : 'var(--text-secondary)' }}>
+                        {t.estimated_minutes || 25} MINS
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectTask(t);
+                      toggleTimer();
+                    }}
+                    className={`comic-btn ${isSelected ? 'comic-btn-pink' : 'comic-btn-white'}`}
+                    style={{ padding: '4px 8px', fontSize: '9.5px', borderRadius: '6px', flexShrink: 0 }}
+                  >
+                    {isSelected && isRunning ? <Pause size={11} /> : <Play size={11} />}
+                    <span>{isSelected && isRunning ? 'FOCUSING' : 'FOCUS'}</span>
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

@@ -90,9 +90,15 @@ def handle_unprocessable_entity(err):
 def not_found(e):
     return jsonify(error=str(e)), 404
 
-@app.errorhandler(500)
-def server_error(e):
-    return jsonify(error="Internal server error"), 500
+@app.route('/', methods=['GET'])
+@app.route('/api', methods=['GET'])
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        "status": "online",
+        "service": "Taskify Pro Multiverse API",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }), 200
 
 @app.route('/api/seed', methods=['GET', 'POST'])
 def auto_seed():

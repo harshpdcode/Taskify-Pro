@@ -279,21 +279,23 @@ export default function Header({
           </div>
         )}
 
-        {/* ── LIGHT / DARK MODE TOGGLE BUTTON (Visible on both Desktop & Mobile!) ── */}
-        <motion.button
-          whileTap={{ scale: 0.88, rotate: 20 }}
-          whileHover={{ scale: 1.08 }}
-          onClick={toggleTheme}
-          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className="comic-btn comic-btn-yellow"
-          style={{
-            padding: isDesktop ? '6px 8px' : '5px 7px',
-            borderRadius: '8px',
-            flexShrink: 0,
-          }}
-        >
-          {darkMode ? <Sun size={15} color="#000000" /> : <Moon size={15} color="#000000" />}
-        </motion.button>
+        {/* ── LIGHT / DARK MODE TOGGLE BUTTON (Desktop header; mobile has it symmetrically in bottom dock) ── */}
+        {isDesktop && (
+          <motion.button
+            whileTap={{ scale: 0.88, rotate: 20 }}
+            whileHover={{ scale: 1.08 }}
+            onClick={toggleTheme}
+            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="comic-btn comic-btn-yellow"
+            style={{
+              padding: '6px 8px',
+              borderRadius: '8px',
+              flexShrink: 0,
+            }}
+          >
+            {darkMode ? <Sun size={15} color="#000000" /> : <Moon size={15} color="#000000" />}
+          </motion.button>
+        )}
 
         {/* New Task button (Desktop only, mobile has central FAB in bottom dock) */}
         {isDesktop && (

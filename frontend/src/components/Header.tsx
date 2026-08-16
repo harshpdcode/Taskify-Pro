@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   Flame,
   Zap,
-  Download,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,7 +23,6 @@ interface HeaderProps {
   onSearchChange: (q: string) => void;
   username: string;
   streakCount?: number;
-  onOpenInstallModal?: () => void;
 }
 
 export default function Header({
@@ -35,7 +33,6 @@ export default function Header({
   onSearchChange,
   username,
   streakCount = 3,
-  onOpenInstallModal,
 }: HeaderProps) {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -135,23 +132,6 @@ export default function Header({
 
       {/* ── Right: controls ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: isDesktop ? '10px' : '6px', flexShrink: 0 }}>
-        {/* Install App Button */}
-        {onOpenInstallModal && (
-          <button
-            onClick={onOpenInstallModal}
-            className="comic-btn comic-btn-cyan spider-hover-glitch"
-            style={{
-              padding: isDesktop ? '7px 12px' : '6px 8px',
-              fontSize: '11px',
-              borderRadius: '8px',
-            }}
-            title="Install App as Native Mobile / Desktop App"
-          >
-            <Download size={14} />
-            {isDesktop && <span>INSTALL APP</span>}
-          </button>
-        )}
-
         {/* Streak Stamp */}
         {isDesktop && (
           <div

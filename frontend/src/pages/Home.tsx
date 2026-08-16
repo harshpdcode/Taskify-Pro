@@ -30,6 +30,7 @@ import AsciiGlitchText from '../components/AsciiGlitchText';
 import { exportComicReport } from '../utils/exportComicReport';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 import InstallPwaModal from '../components/InstallPwaModal';
+import MobileBottomDock from '../components/MobileBottomDock';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -268,14 +269,13 @@ export default function Home() {
           onSearchChange={setSearchQuery}
           username={user?.username || ''}
           streakCount={4}
-          onOpenInstallModal={() => setShowInstallModal(true)}
         />
 
         {/* Dashboard Main Body */}
         <main
           style={{
             flex: 1,
-            padding: isDesktop ? '24px 24px 40px' : '12px 10px 80px',
+            padding: isDesktop ? '24px 24px 40px' : '12px 10px 96px',
             maxWidth: '1280px',
             width: '100%',
             margin: '0 auto',
@@ -633,32 +633,13 @@ export default function Home() {
         </main>
       </div>
 
-      {/* Mobile Floating Action Button (FAB) for Vivo Y73 & Phones */}
+      {/* Mobile Interactive Bottom Navigation Dock */}
       {!isDesktop && (
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          whileHover={{ scale: 1.08 }}
-          onClick={handleOpenNewTask}
-          aria-label="Create New Task"
-          className="comic-btn comic-btn-pink"
-          style={{
-            position: 'fixed',
-            bottom: '22px',
-            right: '20px',
-            zIndex: 45,
-            width: '56px',
-            height: '56px',
-            borderRadius: '16px',
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '4px 4px 0px #000000',
-            border: '3px solid #000000',
-          }}
-        >
-          <Plus size={26} strokeWidth={3} />
-        </motion.button>
+        <MobileBottomDock
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          onOpenQuickAdd={handleOpenNewTask}
+        />
       )}
 
       {/* Task Create & Edit Modal */}

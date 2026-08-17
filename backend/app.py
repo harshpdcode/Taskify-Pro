@@ -21,10 +21,9 @@ CORS(app, resources={
     r"/api/*": {
         "origins": "*",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True
+        "allow_headers": ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"]
     }
-}, supports_credentials=True)
+})
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config.from_pyfile('config.py')  # Move configs to separate file
@@ -46,38 +45,28 @@ app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)  # Refresh token ex
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
 app.config['JWT_COOKIE_SECURE'] = False  # For local dev, HTTP only
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # Enable CSRF protection
-# Prevent CSRF attacks
-app.config['JWT_CSRF_CHECK_FORM'] = True
-
-# Only send cookies over HTTPS
-
-
-# Limit token side-jacking
+app.config['JWT_CSRF_CHECK_FORM'] = False
 app.config['JWT_SESSION_COOKIE'] = False  
-
 
 # Initialize DB
 db.init_app(app)
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
+
 # Import and register blueprints
 from auth import auth_bp
 from task import tasks_bp
 init_mail(app)
-
-
-# THEN import and init blueprints
-from auth import auth_bp
-
 
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(tasks_bp, url_prefix='/api')
 
 init_app(app)
 
-# Create tables & migrate column lengths
+# Create tables & migrate column lengths & auto-seed demo accounts
 with app.app_context():
     from sqlalchemy import text
+    from models import User
     if not os.path.exists(os.path.join(basedir, 'instance')):
         os.makedirs(os.path.join(basedir, 'instance'))
     db.create_all()
@@ -88,12 +77,30 @@ with app.app_context():
         db.session.commit()
     except Exception:
         db.session.rollback()
+
+    # Ensure demo users always exist and are seeded
+    try:
+        demo_user = User.query.filter_by(username="demo").first()
+        if not demo_user:
+            from seed import seed_database
+            seed_database()
+    except Exception as e:
+        print(f"Auto-seed check: {e}")
+
 @app.errorhandler(422)
 def handle_unprocessable_entity(err):
     return jsonify({
         "error": "Token validation failed",
         "message": str(err.description)
     }), 422
+
+@app.errorhandler(429)
+def handle_ratelimit(err):
+    return jsonify({
+        "error": "Rate limit reached. Please wait a moment before trying again.",
+        "message": str(err.description)
+    }), 429
+
 @app.errorhandler(404)
 def not_found(e):
     return jsonify(error=str(e)), 404
@@ -123,15 +130,7 @@ def auto_seed():
         }), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
-limiter.init_app(app)
-limiter.enabled = not app.debug
 
 if __name__ == '__main__':
-    limiter = Limiter(
-        app=app,
-        key_func=get_remote_address,
-        storage_uri="memory://",
-        enabled=not app.debug
-    )
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=False)

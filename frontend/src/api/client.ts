@@ -1,15 +1,16 @@
 // src/api/client.ts
 import axios from 'axios';
 
-const getBaseURL = () => {
+export const getBaseURL = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
+    const protocol = window.location.protocol || 'http:';
     // If accessing via IP or domain, use the current host's IP on port 5000
     if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return `http://${hostname}:5000/api`;
+      return `${protocol}//${hostname}:5000/api`;
     }
   }
   return 'http://localhost:5000/api';
@@ -17,7 +18,6 @@ const getBaseURL = () => {
 
 export const api = axios.create({
   baseURL: getBaseURL(),
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
   }

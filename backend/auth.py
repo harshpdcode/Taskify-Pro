@@ -32,7 +32,7 @@ otp_store = {}
 otp_verified = set()  
 
 @auth_bp.before_request
-@limiter.limit("10/minute", methods=["POST"])
+@limiter.limit("60/minute", methods=["POST"])
 def before_auth_request():
     pass  # Just for rate limiting
 
@@ -101,21 +101,28 @@ def register():
         if not data or not all(k in data for k in ['username', 'email', 'password']):
             return jsonify({"error": "Missing username, email, or password"}), 400
 
-        if User.query.filter_by(username=data['username']).first():
+        username = str(data.get('username') or '').strip()
+        email = str(data.get('email') or '').strip()
+        password = str(data.get('password') or '')
+
+        if not username or not email or not password:
+            return jsonify({"error": "Username, email, and password cannot be empty"}), 400
+
+        if User.query.filter(db.func.lower(User.username) == username.lower()).first():
             return jsonify({"error": "Username already exists"}), 409
 
-        if User.query.filter_by(email=data['email']).first():
+        if User.query.filter(db.func.lower(User.email) == email.lower()).first():
             return jsonify({"error": "Email already registered"}), 409
-        if not is_valid_email(data['email']):
+        if not is_valid_email(email):
             return jsonify({"error": "Invalid email format"}), 400
             
         # Create user
-        hashed_password = generate_password_hash(data['password'])
+        hashed_password = generate_password_hash(password)
         new_user = User(
-            username=data['username'],
-            email=data['email'],
+            username=username,
+            email=email,
             password=hashed_password,
-            reset_token=None,  # Explicitly set to None
+            reset_token=None,
             reset_token_exp=None
         )
         
@@ -132,7 +139,6 @@ def register():
 def validate_password(password):
     if len(password) < 8:
         return False
-    # Add more checks (uppercase, symbols, etc)
     return True
 
 @auth_bp.route('/login', methods=['POST'])
@@ -144,22 +150,24 @@ def login():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        identifier = data.get('username')  # could be username or email
-        password = data.get('password')
+        identifier = str(data.get('username') or '').strip()  # could be username or email
+        password = str(data.get('password') or '')
 
         if not identifier or not password:
             return jsonify({"error": "Username/email and password required"}), 400
 
-        # Find user by username or email
+        # Find user by username or email (case-insensitive & whitespace trimmed)
         user = User.query.filter(
-            (User.username == identifier) | (User.email == identifier)
+            (db.func.lower(User.username) == identifier.lower()) |
+            (db.func.lower(User.email) == identifier.lower())
         ).first()
 
         if not user:
-            print("User not found")
+            print(f"User not found for identifier: {identifier}")
             return jsonify({"error": "Invalid credentials"}), 401
 
         if not check_password_hash(user.password, password):
+            print(f"Password mismatch for user: {user.username}")
             return jsonify({"error": "Invalid credentials"}), 401
 
         access_token = create_access_token(identity=str(user.id))
@@ -176,7 +184,7 @@ def login():
         set_access_cookies(response, access_token)
         set_refresh_cookies(response, refresh_token)
 
-        print("Login successful")
+        print(f"Login successful for user: {user.username}")
         return response, 200
 
     except Exception as e:

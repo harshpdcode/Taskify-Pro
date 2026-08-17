@@ -1,7 +1,7 @@
 // src/pages/Register.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../api/client';
+import { api, getBaseURL } from '../api/client';
 import { User, Mail, Lock, ArrowRight, Sun, Moon, Eye, EyeOff, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
@@ -35,6 +35,14 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanUsername = formData.username.trim();
+    const cleanEmail = formData.email.trim();
+
+    if (!cleanUsername || !cleanEmail || !formData.password) {
+      toast.error('All fields are required');
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -42,8 +50,8 @@ export default function Register() {
     try {
       setIsLoading(true);
       const res = await api.post('/register', {
-        username: formData.username,
-        email: formData.email,
+        username: cleanUsername,
+        email: cleanEmail,
         password: formData.password,
       });
       if (res.status === 201) {
@@ -51,7 +59,18 @@ export default function Register() {
         navigate('/login');
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Registration failed');
+      console.error('Registration error:', err);
+      const serverMsg = err.response?.data?.error || err.response?.data?.message;
+      if (serverMsg) {
+        toast.error(serverMsg);
+      } else if (err.response?.status === 429) {
+        toast.error('Too many requests. Please wait a moment and try again.');
+      } else if (err.code === 'ERR_NETWORK' || !err.response) {
+        const apiTarget = getBaseURL();
+        toast.error(`Cannot connect to server at ${apiTarget}. Check network or IP!`);
+      } else {
+        toast.error(err.message || 'Registration failed');
+      }
     } finally {
       setIsLoading(false);
     }

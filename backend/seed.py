@@ -1,4 +1,5 @@
 # seed.py
+import sys
 import json
 from datetime import datetime, timedelta, timezone
 from werkzeug.security import generate_password_hash
@@ -7,9 +8,24 @@ from app import app
 from extensions import db
 from models import User, Task
 
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+def safe_print(msg):
+    try:
+        print(msg)
+    except Exception:
+        try:
+            print(msg.encode('ascii', 'replace').decode('ascii'))
+        except Exception:
+            pass
+
 def seed_database():
     with app.app_context():
-        print("🌱 Initializing database tables...")
+        safe_print("[SEED] Initializing database tables...")
         db.create_all()
 
         # Migrate column lengths for PostgreSQL
@@ -190,7 +206,12 @@ def seed_database():
                 db.session.add(user)
                 db.session.flush()
                 created_users += 1
-                print(f"  👤 Created user: {user.username} ({user.email})")
+                safe_print(f"  [USER] Created user: {user.username} ({user.email})")
+            else:
+                # Update password so demo credentials always stay valid
+                user.password = u_data["password"]
+                db.session.flush()
+                safe_print(f"  [USER] Updated credentials for: {user.username}")
 
             for t_data in u_data["tasks"]:
                 existing_task = Task.query.filter_by(user_id=user.id, title=t_data["title"]).first()
@@ -210,13 +231,13 @@ def seed_database():
                     )
                     db.session.add(task)
                     created_tasks += 1
-                    print(f"    📋 Added task: {task.title}")
+                    safe_print(f"    [TASK] Added task: {task.id}")
 
         db.session.commit()
-        print(f"\n🎉 Database seeding complete! ({created_users} users created, {created_tasks} tasks created)")
-        print("\n🔑 Test Credentials:")
-        print("   1. Username: demo   | Password: Password123! | Email: demo@taskify.pro")
-        print("   2. Username: harsh  | Password: Password123! | Email: harsh@taskify.pro")
+        safe_print(f"\n[SUCCESS] Database seeding complete! ({created_users} users created, {created_tasks} tasks created)")
+        safe_print("\n[INFO] Test Credentials:")
+        safe_print("   1. Username: demo   | Password: Password123! | Email: demo@taskify.pro")
+        safe_print("   2. Username: harsh  | Password: Password123! | Email: harsh@taskify.pro")
 
 if __name__ == '__main__':
     seed_database()

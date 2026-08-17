@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { useTheme } from '../context/ThemeContext';
+import { getBaseURL } from '../api/client';
 
 const features = [
   { emoji: '📋', title: 'Kanban Lanes', desc: 'Drag-and-drop task boards' },
@@ -33,13 +34,29 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanUsername = username.trim();
+    if (!cleanUsername || !password) {
+      toast.error('Please enter both username/email and password');
+      return;
+    }
     setIsLoading(true);
     try {
-      await login(username, password);
+      await login(cleanUsername, password);
       toast.success('Welcome back! 💥');
       navigate('/app');
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Invalid credentials');
+      console.error('Login error:', err);
+      const serverMsg = err.response?.data?.error || err.response?.data?.message;
+      if (serverMsg) {
+        toast.error(serverMsg);
+      } else if (err.response?.status === 429) {
+        toast.error('Too many requests. Please wait a moment and try again.');
+      } else if (err.code === 'ERR_NETWORK' || !err.response) {
+        const apiTarget = getBaseURL();
+        toast.error(`Cannot connect to server at ${apiTarget}. Check network or IP!`);
+      } else {
+        toast.error(err.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setIsLoading(false);
     }

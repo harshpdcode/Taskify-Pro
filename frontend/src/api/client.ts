@@ -2,6 +2,12 @@
 import axios from 'axios';
 
 export const getBaseURL = () => {
+  if (typeof window !== 'undefined') {
+    const customUrl = localStorage.getItem('custom_api_url');
+    if (customUrl) {
+      return customUrl;
+    }
+  }
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
@@ -34,10 +40,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   response => response,
   error => {
-    // Only redirect to /login if the failed request is NOT /login or /refresh
+    // Only redirect to /login if the failed request is NOT /login or /refresh and NOT demo mode
     const requestUrl = error.config?.url || '';
+    const isDemo = typeof window !== 'undefined' && localStorage.getItem('is_demo_mode') === 'true';
     if (
       error.response?.status === 401 &&
+      !isDemo &&
       !requestUrl.endsWith('/login') &&
       !requestUrl.endsWith('/refresh')
     ) {

@@ -13,6 +13,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
+  loginDemo: () => Promise<boolean>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -21,14 +22,31 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!localStorage.getItem('access_token'));
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('is_demo_mode') === 'true') {
+      return { id: 1, username: 'demo', email: 'demo@taskify.pro' };
+    }
+    return null;
+  });
   const navigate = useNavigate();
 
   const fetchUser = async () => {
     const token = localStorage.getItem('access_token');
+    const isDemo = localStorage.getItem('is_demo_mode') === 'true';
+
     if (!token) {
       setIsAuthenticated(false);
       setUser(null);
+      return;
+    }
+
+    if (isDemo) {
+      setIsAuthenticated(true);
+      setUser({
+        id: 1,
+        username: 'demo',
+        email: 'demo@taskify.pro',
+      });
       return;
     }
 
@@ -63,12 +81,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => window.removeEventListener('storage', syncAuth);
   }, []);
 
+  const loginDemo = async () => {
+    // Try online login first; if server unreachable, activate instant demo mode
+    try {
+      const response = await api.post('/login', { username: 'demo', password: 'Password123!' });
+      if (response.data.access_token) {
+        localStorage.setItem('access_token', response.data.access_token);
+        localStorage.removeItem('is_demo_mode');
+        setIsAuthenticated(true);
+        setUser({
+          id: response.data.user_id,
+          username: response.data.username,
+        });
+        return true;
+      }
+    } catch (err: any) {
+      console.warn('Live backend unreachable, entering Offline Demo Mode:', err);
+    }
+
+    // Direct Instant Demo fallback
+    localStorage.setItem('access_token', 'demo-token-taskify-multiverse');
+    localStorage.setItem('is_demo_mode', 'true');
+    setIsAuthenticated(true);
+    setUser({
+      id: 1,
+      username: 'demo',
+      email: 'demo@taskify.pro',
+    });
+    return true;
+  };
+
   const login = async (username: string, password: string) => {
+    const isDemoAccount = username.toLowerCase() === 'demo' && password === 'Password123!';
+
     try {
       const response = await api.post('/login', { username, password });
 
       if (response.data.access_token) {
         localStorage.setItem('access_token', response.data.access_token);
+        localStorage.removeItem('is_demo_mode');
         setIsAuthenticated(true);
         setUser({
           id: response.data.user_id,
@@ -77,7 +128,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return true;
       }
       return false;
-    } catch (error) {
+    } catch (error: any) {
+      // If user attempted demo login and backend is unreachable, automatically fall back to demo mode!
+      if (isDemoAccount && (error.code === 'ERR_NETWORK' || !error.response)) {
+        return loginDemo();
+      }
       setIsAuthenticated(false);
       setUser(null);
       throw error;
@@ -85,20 +140,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    try {
-      await api.post('/logout');
-    } catch (e) {
-      console.error(e);
-    } finally {
-      localStorage.removeItem('access_token');
-      setIsAuthenticated(false);
-      setUser(null);
-      navigate('/login');
+    const isDemo = localStorage.getItem('is_demo_mode') === 'true';
+    if (!isDemo) {
+      try {
+        await api.post('/logout');
+      } catch (e) {
+        console.error(e);
+      }
     }
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('is_demo_mode');
+    setIsAuthenticated(false);
+    setUser(null);
+    navigate('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, checkAuth: fetchUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, loginDemo, logout, checkAuth: fetchUser }}>
       {children}
     </AuthContext.Provider>
   );
